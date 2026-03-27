@@ -11,8 +11,8 @@ export function WelcomeLanding() {
 
   return (
     <div className="min-h-dvh lg:h-dvh lg:overflow-hidden flex flex-col p-4 md:p-6 lg:p-8">
-      {/* Top spacer — keeps content in the bottom portion (portrait layout) */}
-      <div className="flex-1 min-h-[40%]" />
+      {/* Top spacer — keeps content below the avatar's face */}
+      <div className="flex-1 min-h-[25%]" />
 
       {/* Content — centered on mobile, left-aligned on desktop */}
       <div className="space-y-5 text-center lg:text-left max-w-xl mx-auto lg:mx-0">

@@ -91,10 +91,10 @@ export function BackgroundLayer() {
           backgroundSize: 'cover',
           minWidth: '100vw',
           minHeight: '100vh',
-          opacity: videoRevealed ? 0 : isConnected ? 1 : isAwake ? 0.85 : 0.6,
+          opacity: videoRevealed ? 0 : isConnected ? 1 : isAwake ? 0.75 : 0.5,
           filter: isAwake
-            ? `brightness(var(--theme-video-brightness)) saturate(var(--theme-video-saturate))`
-            : `brightness(0.5) saturate(0.3)`,
+            ? `brightness(0.55) saturate(var(--theme-video-saturate))`
+            : `brightness(0.35) saturate(0.3)`,
           transition: 'opacity 1.5s ease, filter 1.2s ease',
         }}
       />
