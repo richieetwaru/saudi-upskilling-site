@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useVoiceSessionStore } from '@/lib/stores/voice-session-store';
 import { assets } from '@/assets';
 
@@ -14,9 +14,37 @@ export function BackgroundLayer() {
 
   const isConnected = sessionState === 'connected';
   const isConnecting = sessionState === 'connecting';
-  const showPulse = isConnecting || (isConnected && agentState === 'thinking');
-  const showAvatarVideo = avatarEnabled && avatarVisible && !!avatarVideoTrack;
-  const bgImage = avatarThumbnailUrl || assets.backgroundHero;
+  const isThinking = isConnected && agentState === 'thinking';
+  const showPulse = isConnecting || isThinking;
+  const hasVideoTrack = avatarEnabled && avatarVisible && !!avatarVideoTrack;
+
+  // Wake on mouse move (start dimmed, brighten on interaction)
+  const [isAwake, setIsAwake] = useState(false);
+  useEffect(() => {
+    if (isConnected || isConnecting) {
+      setIsAwake(true);
+      return;
+    }
+    const handleMouseMove = () => setIsAwake(true);
+    window.addEventListener('mousemove', handleMouseMove, { once: true });
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [isConnected, isConnecting]);
+
+  // Graceful video reveal
+  const [videoRevealed, setVideoRevealed] = useState(false);
+  useEffect(() => {
+    if (hasVideoTrack && !videoRevealed) {
+      const timer = setTimeout(() => setVideoRevealed(true), 300);
+      return () => clearTimeout(timer);
+    }
+    if (!hasVideoTrack) setVideoRevealed(false);
+  }, [hasVideoTrack, videoRevealed]);
+
+  // When avatar is toggled off: show empty bg
+  const avatarOff = !avatarVisible && isConnected;
+  const bgImage = avatarOff
+    ? assets.backgroundEmpty
+    : (avatarThumbnailUrl || assets.backgroundHero);
 
   const videoRef = useCallback(
     (el: HTMLVideoElement | null) => {
@@ -29,7 +57,7 @@ export function BackgroundLayer() {
 
   return (
     <>
-      {/* Base hero background — fallback when avatar video is not active */}
+      {/* Base hero background — always present */}
       <div
         style={{
           position: 'fixed',
@@ -42,20 +70,45 @@ export function BackgroundLayer() {
           backgroundSize: 'cover',
           minWidth: '100vw',
           minHeight: '100vh',
-          opacity: showAvatarVideo ? 0 : isConnected ? 1 : 0.8,
-          filter: `brightness(var(--theme-video-brightness)) saturate(var(--theme-video-saturate))`,
-          transition: 'opacity 0.6s ease, filter 0.6s ease',
+          opacity: videoRevealed ? 0 : isConnected ? 1 : isAwake ? 0.85 : 0.6,
+          filter: isAwake
+            ? `brightness(var(--theme-video-brightness)) saturate(var(--theme-video-saturate))`
+            : `brightness(0.5) saturate(0.3)`,
+          transition: 'opacity 1.5s ease, filter 1.2s ease',
         }}
       />
 
-      {/* Avatar video — full viewport, visible through scene gradient AND chat panel */}
-      {showAvatarVideo && (
+      {/* Grayscale hero overlay — when connected with avatar off */}
+      {avatarOff && (
         <div
           style={{
             position: 'fixed',
             inset: 0,
             zIndex: -1,
             pointerEvents: 'none',
+            backgroundImage: `url(${avatarThumbnailUrl || assets.backgroundHero})`,
+            backgroundPosition: 'right top',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
+            minWidth: '100vw',
+            minHeight: '100vh',
+            opacity: 0.25,
+            filter: 'saturate(0) brightness(0.6)',
+            transition: 'opacity 1s ease, filter 1s ease',
+          }}
+        />
+      )}
+
+      {/* Avatar video — crossfades in over the hero background */}
+      {hasVideoTrack && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: -1,
+            pointerEvents: 'none',
+            opacity: videoRevealed ? 1 : 0,
+            transition: 'opacity 1.5s ease',
           }}
         >
           <video
@@ -69,13 +122,14 @@ export function BackgroundLayer() {
               objectFit: 'cover',
               objectPosition: 'right center',
               filter: `brightness(var(--theme-video-brightness)) saturate(var(--theme-video-saturate))`,
+              transition: 'filter 0.4s ease',
             }}
           />
         </div>
       )}
 
       {/* Pulsing overlay — visible while connecting or thinking */}
-      {showPulse && !showAvatarVideo && (
+      {showPulse && !hasVideoTrack && (
         <div
           className="hero-pulse-overlay"
           style={{

@@ -89,7 +89,7 @@ export function SceneManager() {
       )}
 
       {/* Main content */}
-      <main className="relative z-10 flex-1 px-0 md:px-6 pb-4 overflow-auto min-h-0">
+      <main className="relative z-10 flex-1 px-0 md:px-6 pb-0 overflow-hidden min-h-0">
         {skeletonLayout ? (
           <MobileSkeleton />
         ) : customLayout && currentScene ? (
@@ -137,20 +137,29 @@ export function SceneManager() {
   );
 }
 
-/** Simple mobile-friendly skeleton — single column shimmer cards */
+/** Mobile skeleton — matches carousel position (bottom of viewport, landscape) */
 function MobileSkeleton() {
   return (
-    <div className="flex flex-col gap-3 px-4 md:px-0 pt-4">
-      {[0, 1, 2].map((i) => (
+    <div className="absolute inset-0 flex flex-col">
+      <div style={{ flex: '0 0 55%' }} />
+      <div className="px-4" style={{ height: '30vh', flexShrink: 0 }}>
         <div
-          key={i}
-          className="rounded-xl skeleton-shimmer-bg animate-skeleton-bounce"
-          style={{
-            height: '120px',
-            animationDelay: `${i * 150}ms`,
-          }}
+          className="card-glass h-full rounded-xl skeleton-shimmer-bg animate-skeleton-bounce"
         />
-      ))}
+      </div>
+      <div className="flex items-center justify-center gap-2 py-2">
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            className="rounded-full"
+            style={{
+              width: i === 0 ? 20 : 8,
+              height: 8,
+              background: i === 0 ? '#C8962E' : 'rgba(255,255,255,0.3)',
+            }}
+          />
+        ))}
+      </div>
     </div>
   );
 }

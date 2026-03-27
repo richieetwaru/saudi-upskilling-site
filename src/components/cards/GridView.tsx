@@ -406,15 +406,15 @@ const MobileCarousel: React.FC<{
     }, [pauseAutoScroll]);
 
     return (
-        <div className="flex flex-col justify-end h-full min-h-0">
-            {/* Spacer — pushes cards to bottom half so avatar face is visible */}
-            <div className="flex-1 min-h-[20%]" />
+        <div className="absolute inset-0 flex flex-col">
+            {/* Spacer — fills top 55% so avatar face stays visible */}
+            <div style={{ flex: '0 0 55%' }} />
 
-            {/* Carousel container — constrained height, no flex-grow */}
+            {/* Carousel — fixed in the bottom 45%, landscape card shape */}
             <div
                 ref={scrollRef}
                 className="mobile-carousel flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
-                style={{ maxHeight: '45vh' }}
+                style={{ height: '30vh', flexShrink: 0 }}
                 onScroll={handleScroll}
                 onTouchStart={handleTouchStart}
                 onMouseDown={handleTouchStart}
@@ -424,26 +424,28 @@ const MobileCarousel: React.FC<{
                         <div
                             key={`skel-${card.type}-${i}`}
                             className="snap-start flex-shrink-0 px-4"
-                            style={{ width: '100%', maxHeight: '45vh' }}
+                            style={{ width: '100%', height: '30vh' }}
                         >
-                            <CardSkeleton delay={i * 50} />
+                            <div className="card-glass h-full rounded-xl skeleton-shimmer-bg" />
                         </div>
                     ))
                     : cards.map((card, i) => (
                         <div
                             key={`${card.type}-${i}`}
                             className="snap-start flex-shrink-0 px-4"
-                            style={{ width: '100%', maxHeight: '45vh', overflow: 'auto' }}
+                            style={{ width: '100%', height: '30vh' }}
                         >
-                            {renderCard(card, i)}
+                            <div className="h-full overflow-auto">
+                                {renderCard(card, i)}
+                            </div>
                         </div>
                     ))
                 }
             </div>
 
-            {/* Dot indicators */}
+            {/* Dot indicators — pinned right below carousel */}
             {cardCount > 1 && (
-                <div className="flex items-center justify-center gap-2 py-3">
+                <div className="flex items-center justify-center gap-2 py-2 shrink-0">
                     {cards.map((_, i) => (
                         <button
                             key={i}
