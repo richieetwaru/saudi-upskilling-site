@@ -59,10 +59,17 @@ export const InterviewCard: React.FC<InterviewCardProps> = ({
   difficulty,
   tips: rawTips,
   questions: rawQuestions,
-  description,
+  description: rawDescription,
   onAction,
 }) => {
-  const tips = parseTips(rawTips);
+  // If description contains JSON array of tips, extract them
+  let description = rawDescription;
+  let extraTips: Tip[] = [];
+  if (typeof rawDescription === 'string' && rawDescription.trim().startsWith('[{')) {
+    extraTips = parseTips(rawDescription);
+    description = undefined;
+  }
+  const tips = [...parseTips(rawTips), ...extraTips];
   const questions = parseQuestions(rawQuestions);
   return (
     <div className="flex flex-col h-full overflow-hidden">

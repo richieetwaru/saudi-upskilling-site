@@ -116,8 +116,8 @@ export function SceneManager() {
 /** Mobile skeleton — matches carousel position (fixed to bottom, portrait) */
 function MobileSkeleton() {
   return (
-    <div style={{ position: 'fixed', bottom: '72px', left: 0, right: 0, zIndex: 10 }}>
-      <div className="px-4" style={{ height: '45vh' }}>
+    <div style={{ position: 'fixed', bottom: '85px', left: 0, right: 0, zIndex: 10 }}>
+      <div className="px-4" style={{ height: '55vh' }}>
         <div className="card-glass h-full rounded-xl skeleton-shimmer-bg animate-skeleton-bounce" />
       </div>
       <div className="flex items-center justify-center gap-2 py-2">
