@@ -346,6 +346,17 @@ body.tele-nav-pending .nav-skeleton-overlay {
   scroll-behavior: smooth;
 }
 
+/* ── Mobile: minimal frosting so avatar shows through ── */
+@media (max-width: 1024px) {
+  .card-glass {
+    --theme-card-bg: rgba(255, 255, 255, 0.03);
+    --theme-card-border: rgba(255, 255, 255, 0.06);
+    --theme-card-blur: 2px;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+}
+
 /* ── Avatar reveal sparkle particles ── */
 @keyframes sparkle-float {
   0% { opacity: 0; transform: scale(0) translateY(0); }
