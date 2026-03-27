@@ -40,13 +40,13 @@ export function WelcomeLanding() {
 
   return (
     <div className="min-h-dvh lg:h-dvh lg:overflow-hidden flex flex-col">
-      {/* Spacer for top */}
-      <div className="flex-1 min-h-[30%]" />
+      {/* Spacer — push cards below the avatar's face */}
+      <div className="flex-1 min-h-[45%]" />
 
       {/* Static welcome carousel */}
       <div
         className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide shrink-0"
-        style={{ height: '50vh' }}
+        style={{ height: '40vh' }}
       >
         {WELCOME_CARDS.map((card, i) => (
           <div

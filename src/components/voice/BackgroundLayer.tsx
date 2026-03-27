@@ -23,7 +23,7 @@ const BG_STYLE = {
   pointerEvents: 'none' as const,
   backgroundRepeat: 'no-repeat',
   backgroundSize: 'cover',
-  backgroundPosition: 'right top',
+  backgroundPosition: '70% top',
   minWidth: '100vw',
   minHeight: '100vh',
 };
@@ -146,7 +146,7 @@ export function BackgroundLayer() {
               width: '100%',
               height: '100%',
               objectFit: 'cover',
-              objectPosition: 'right top',
+              objectPosition: '70% top',
               filter: `brightness(var(--theme-video-brightness)) saturate(var(--theme-video-saturate))`,
               transition: 'filter 0.4s ease',
             }}
