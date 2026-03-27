@@ -406,11 +406,15 @@ const MobileCarousel: React.FC<{
     }, [pauseAutoScroll]);
 
     return (
-        <div className="flex flex-col flex-1 pt-4 min-h-0">
-            {/* Carousel container */}
+        <div className="flex flex-col justify-end h-full min-h-0">
+            {/* Spacer — pushes cards to bottom half so avatar face is visible */}
+            <div className="flex-1 min-h-[20%]" />
+
+            {/* Carousel container — constrained height, no flex-grow */}
             <div
                 ref={scrollRef}
-                className="mobile-carousel flex-1 flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+                className="mobile-carousel flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+                style={{ maxHeight: '45vh' }}
                 onScroll={handleScroll}
                 onTouchStart={handleTouchStart}
                 onMouseDown={handleTouchStart}
@@ -419,8 +423,8 @@ const MobileCarousel: React.FC<{
                     ? cards.map((card, i) => (
                         <div
                             key={`skel-${card.type}-${i}`}
-                            className="snap-start flex-shrink-0 w-full px-3"
-                            style={{ minHeight: '200px' }}
+                            className="snap-start flex-shrink-0 px-4"
+                            style={{ width: '100%', maxHeight: '45vh' }}
                         >
                             <CardSkeleton delay={i * 50} />
                         </div>
@@ -428,7 +432,8 @@ const MobileCarousel: React.FC<{
                     : cards.map((card, i) => (
                         <div
                             key={`${card.type}-${i}`}
-                            className="snap-start flex-shrink-0 w-full px-3"
+                            className="snap-start flex-shrink-0 px-4"
+                            style={{ width: '100%', maxHeight: '45vh', overflow: 'auto' }}
                         >
                             {renderCard(card, i)}
                         </div>
@@ -448,7 +453,7 @@ const MobileCarousel: React.FC<{
                                 width: i === activeIndex ? 20 : 8,
                                 height: 8,
                                 borderRadius: 4,
-                                background: i === activeIndex ? '#C8962E' : '#D0D0D0',
+                                background: i === activeIndex ? '#C8962E' : 'rgba(255,255,255,0.3)',
                             }}
                         />
                     ))}

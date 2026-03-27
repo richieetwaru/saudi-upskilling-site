@@ -54,41 +54,41 @@
   --color-midnight: #1A3A4B;
   --amber: #C8962E;
 
-  /* ── Scene Card Theme — Light ── */
-  --theme-chart-line: #1A3A4B;
-  --theme-card-data: #1A3A4B;
-  --theme-card-voice: #3A5A6B;
-  --theme-card-bg: #FFFFFF;
-  --theme-card-border: #D0D8DD;
-  --theme-card-blur: 4px;
-  --theme-card-title: #1A3A4B;
+  /* ── Scene Card Theme — Glass on Dark ── */
+  --theme-chart-line: rgba(255, 255, 255, 0.92);
+  --theme-card-data: rgba(255, 255, 255, 0.92);
+  --theme-card-voice: rgba(255, 255, 255, 0.80);
+  --theme-card-bg: rgba(255, 255, 255, 0.10);
+  --theme-card-border: rgba(255, 255, 255, 0.12);
+  --theme-card-blur: 12px;
+  --theme-card-title: #ffffff;
 
   /* Scene page-level */
-  --theme-scene-bg: #F0F0F0;
-  --theme-scene-text: #1A3A4B;
-  --theme-scene-text-muted: #5A6B75;
-  --theme-scene-badge-bg: rgba(26, 58, 75, 0.1);
-  --theme-scene-badge-text: #1A3A4B;
-  --theme-scene-footer: #5A6B75;
+  --theme-scene-bg: rgba(5, 5, 8, 0.95);
+  --theme-scene-text: #ffffff;
+  --theme-scene-text-muted: #94a3b8;
+  --theme-scene-badge-bg: rgba(255, 255, 255, 0.1);
+  --theme-scene-badge-text: rgba(255, 255, 255, 0.7);
+  --theme-scene-footer: rgba(255, 255, 255, 0.6);
 
   /* Action buttons */
-  --theme-action-btn: #5A6B75;
-  --theme-action-btn-hover: #1A3A4B;
+  --theme-action-btn: rgba(255, 255, 255, 0.5);
+  --theme-action-btn-hover: rgba(255, 255, 255, 0.8);
 
   /* Chat bubbles */
-  --theme-chat-bubble: #FFFFFF;
-  --theme-chat-text: #1A3A4B;
-  --theme-chat-placeholder: #8A9AA5;
+  --theme-chat-bubble: rgba(12, 14, 18, 0.85);
+  --theme-chat-text: #e0e0e0;
+  --theme-chat-placeholder: rgba(255, 255, 255, 0.3);
 
   /* Video filter */
   --theme-video-brightness: 0.72;
   --theme-video-saturate: 0.9;
 
   /* KPI & badges */
-  --theme-kpi-text: #1A3A4B;
-  --theme-badge-bg: #C8962E;
-  --theme-badge-text: #FFFFFF;
-  --theme-footer-text: #5A6B75;
+  --theme-kpi-text: #ffffff;
+  --theme-badge-bg: rgba(255, 255, 255, 0.85);
+  --theme-badge-text: #ffffff;
+  --theme-footer-text: rgba(255, 255, 255, 0.6);
 }
 
 /* ── Body background ── */
@@ -282,6 +282,8 @@ body {
 .card-glass {
   background: var(--theme-card-bg);
   border: 1px solid var(--theme-card-border);
+  backdrop-filter: blur(var(--theme-card-blur));
+  -webkit-backdrop-filter: blur(var(--theme-card-blur));
   border-radius: 0.75rem;
   padding: 1rem 1.25rem;
   height: 100%;
@@ -289,7 +291,6 @@ body {
   flex-direction: column;
   overflow: hidden;
   container-type: inline-size;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 /* ── Skeleton Bounce ── */
@@ -310,11 +311,11 @@ body {
 .skeleton-shimmer-bg {
   background: linear-gradient(
     90deg,
-    var(--theme-card-bg, #F0F0F0) 0%,
-    rgba(26,58,75,0.06) 40%,
-    rgba(26,58,75,0.10) 50%,
-    rgba(26,58,75,0.06) 60%,
-    var(--theme-card-bg, #F0F0F0) 100%
+    rgba(255,255,255,0.05) 0%,
+    rgba(255,255,255,0.12) 40%,
+    rgba(255,255,255,0.18) 50%,
+    rgba(255,255,255,0.12) 60%,
+    rgba(255,255,255,0.05) 100%
   );
   background-size: 800px 100%;
   animation: skeleton-shimmer 1.6s ease-in-out infinite;
@@ -327,7 +328,7 @@ body {
   opacity: 0;
   transition: opacity 0.12s ease-in;
   pointer-events: none;
-  background: var(--color-midnight, #1A3A4B);
+  background: var(--color-midnight, #0a0e14);
 }
 body.tele-nav-pending .nav-skeleton-overlay {
   opacity: 1;
