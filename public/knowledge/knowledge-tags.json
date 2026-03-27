@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "description": "Semantic tags for RAG retrieval of Saudi Upskilling knowledge files",
+  "files": {
+    "jobs_database.md": {
+      "tags": ["jobs", "careers", "hiring", "salary", "employment", "vacancies", "apply", "openings", "companies", "sectors"],
+      "triggers": ["find me a job", "job openings", "who is hiring", "career opportunities", "salary", "apply", "work in", "positions available"]
+    },
+    "skills_catalog.md": {
+      "tags": ["skills", "competencies", "proficiency", "learning", "certifications", "development", "expertise", "demand"],
+      "triggers": ["what skills", "skill gap", "in demand", "learn", "improve", "certifications", "update my skills", "what should I study"]
+    },
+    "training_programs.md": {
+      "tags": ["training", "programs", "courses", "education", "bootcamp", "academy", "certification", "free", "online", "HRDF", "scholarship"],
+      "triggers": ["training program", "where to study", "free courses", "start learning", "enroll", "bootcamp", "academy", "HRDF", "Tamheer", "Doroob", "how to get certified"]
+    },
+    "interview_preparation.md": {
+      "tags": ["interview", "preparation", "tips", "questions", "practice", "behavioral", "technical", "workplace", "culture"],
+      "triggers": ["prepare for interview", "interview tips", "common questions", "practice interview", "what to expect", "how to answer", "interview prep"]
+    }
+  }
+}
