@@ -58,9 +58,9 @@
   --theme-chart-line: rgba(255, 255, 255, 0.92);
   --theme-card-data: rgba(255, 255, 255, 0.92);
   --theme-card-voice: rgba(255, 255, 255, 0.80);
-  --theme-card-bg: rgba(255, 255, 255, 0.10);
-  --theme-card-border: rgba(255, 255, 255, 0.12);
-  --theme-card-blur: 12px;
+  --theme-card-bg: rgba(255, 255, 255, 0.05);
+  --theme-card-border: rgba(255, 255, 255, 0.08);
+  --theme-card-blur: 6px;
   --theme-card-title: #ffffff;
 
   /* Scene page-level */
