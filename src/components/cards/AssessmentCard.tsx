@@ -10,19 +10,37 @@ interface AssessmentCardProps {
   title?: string;
   subtitle?: string;
   overallScore?: number;
-  skills?: SkillScore[];
+  skills?: SkillScore[] | string;
   recommendation?: string;
   onAction?: (phrase: string) => void;
+}
+
+function parseSkills(raw: SkillScore[] | string | undefined): SkillScore[] {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === 'string') {
+    try {
+      const parsed = JSON.parse(raw.startsWith('[') ? raw : `[${raw}]`);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {}
+    return raw.split(';').map(s => s.trim()).filter(Boolean).map(s => {
+      try { return JSON.parse(s); } catch {}
+      const [name, scoreStr] = s.split(':');
+      return { name: name?.trim() || s, score: parseInt(scoreStr?.trim() || '0', 10), max: 100 };
+    });
+  }
+  return [];
 }
 
 export const AssessmentCard: React.FC<AssessmentCardProps> = ({
   title = 'Skill Assessment',
   subtitle,
   overallScore = 0,
-  skills = [],
+  skills: rawSkills,
   recommendation,
   onAction,
 }) => {
+  const skills = parseSkills(rawSkills);
   return (
     <div className="flex flex-col h-full overflow-hidden rounded-xl" style={{ background: 'linear-gradient(135deg, rgba(200,150,46,0.15) 0%, rgba(200,150,46,0.05) 100%)', border: '1px solid rgba(200,150,46,0.2)' }}>
       <div className="p-5 flex flex-col h-full">

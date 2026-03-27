@@ -8,20 +8,38 @@ interface Step {
 interface OnboardingCardProps {
   title?: string;
   subtitle?: string;
-  steps?: Step[];
+  steps?: Step[] | string;
   currentStep?: number;
   message?: string;
   onAction?: (phrase: string) => void;
 }
 
+function parseSteps(raw: Step[] | string | undefined): Step[] {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === 'string') {
+    try {
+      const parsed = JSON.parse(raw.startsWith('[') ? raw : `[${raw}]`);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {}
+    return raw.split(';').map(s => s.trim()).filter(Boolean).map(s => {
+      try { return JSON.parse(s); } catch {}
+      const done = s.startsWith('[x]') || s.startsWith('[X]');
+      return { label: done ? s.slice(3).trim() : s, done };
+    });
+  }
+  return [];
+}
+
 export const OnboardingCard: React.FC<OnboardingCardProps> = ({
   title = 'Welcome',
   subtitle,
-  steps = [],
+  steps: rawSteps,
   currentStep = 0,
   message,
   onAction,
 }) => {
+  const steps = parseSteps(rawSteps);
   const totalSteps = steps.length;
   const completedSteps = steps.filter(s => s.done).length;
 

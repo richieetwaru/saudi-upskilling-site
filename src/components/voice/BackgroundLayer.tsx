@@ -86,9 +86,9 @@ export function BackgroundLayer() {
           zIndex: -1,
           pointerEvents: 'none',
           backgroundImage: `url(${bgImage})`,
-          backgroundPosition: 'right top',
+          backgroundPosition: 'right bottom',
           backgroundRepeat: 'no-repeat',
-          backgroundSize: 'cover',
+          backgroundSize: '120%',
           minWidth: '100vw',
           minHeight: '100vh',
           opacity: videoRevealed ? 0 : 1,
@@ -106,9 +106,9 @@ export function BackgroundLayer() {
             zIndex: -1,
             pointerEvents: 'none',
             backgroundImage: `url(${avatarThumbnailUrl || assets.backgroundHero})`,
-            backgroundPosition: 'right top',
+            backgroundPosition: 'right bottom',
             backgroundRepeat: 'no-repeat',
-            backgroundSize: 'cover',
+            backgroundSize: '120%',
             minWidth: '100vw',
             minHeight: '100vh',
             opacity: 0.25,
@@ -151,10 +151,10 @@ export function BackgroundLayer() {
             playsInline
             muted
             style={{
-              width: '100%',
-              height: '100%',
+              width: '120%',
+              height: '120%',
               objectFit: 'cover',
-              objectPosition: 'right center',
+              objectPosition: 'right bottom',
               filter: `brightness(var(--theme-video-brightness)) saturate(var(--theme-video-saturate))`,
               transition: 'filter 0.4s ease',
             }}

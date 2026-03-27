@@ -9,10 +9,42 @@ interface InterviewCardProps {
   title: string;
   role?: string;
   difficulty?: string;
-  tips?: Tip[];
-  questions?: string[];
+  tips?: Tip[] | string;
+  questions?: string[] | string;
   description?: string;
   onAction?: (phrase: string) => void;
+}
+
+/** Safely parse tips — handles arrays, stringified JSON, or plain strings */
+function parseTips(raw: Tip[] | string | undefined): Tip[] {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === 'string') {
+    // Try JSON parse
+    try {
+      const parsed = JSON.parse(raw.startsWith('[') ? raw : `[${raw}]`);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {}
+    // Split by semicolons as fallback
+    return raw.split(';').map(s => s.trim()).filter(Boolean).map(s => {
+      try { return JSON.parse(s); } catch {}
+      return { text: s.replace(/^\{.*?\}$/, s), type: 'tip' as const };
+    });
+  }
+  return [];
+}
+
+function parseQuestions(raw: string[] | string | undefined): string[] {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === 'string') {
+    try {
+      const parsed = JSON.parse(raw.startsWith('[') ? raw : `[${raw}]`);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {}
+    return raw.split(';').map(s => s.trim().replace(/^["']|["']$/g, '')).filter(Boolean);
+  }
+  return [];
 }
 
 const TYPE_STYLES: Record<string, { bg: string; dot: string }> = {
@@ -25,11 +57,13 @@ export const InterviewCard: React.FC<InterviewCardProps> = ({
   title,
   role,
   difficulty,
-  tips = [],
-  questions = [],
+  tips: rawTips,
+  questions: rawQuestions,
   description,
   onAction,
 }) => {
+  const tips = parseTips(rawTips);
+  const questions = parseQuestions(rawQuestions);
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Difficulty badge */}

@@ -24,7 +24,7 @@ export function ControlBar() {
   const handleDisconnect = () => { playUISound('off', 'avatar'); disconnect(); };
   const handleToggleMute = () => { playUISound(isMuted ? 'on' : 'off', 'mic'); toggleMute(); };
 
-  const bottomOffset = (isIdle && !hasConnectedRef.current) ? 'bottom-[30vh]' : 'bottom-6';
+  const bottomOffset = 'bottom-6';
 
   return (
     <div className={`fixed ${bottomOffset} left-0 right-0 z-[60] flex justify-center pointer-events-none transition-all duration-700 ease-out`}>
