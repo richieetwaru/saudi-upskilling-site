@@ -86,33 +86,10 @@ function renderCard(card: CardDef, index: number) {
             </div>
         );
     }
-    // ── Card props resolution: supports both flat and nested formats ──
-    // Flat (new, preferred):   { type, span?, label, value, ... }
-    // Nested (old, certified): { type, span?, props: { label, value, ... } }
-    // Strategy: merge both — nestedProps as base, flatProps override.
-    // Certified slides use nested; LLM should use flat (saves ~3 tokens/card).
-    const { type: _t, span: _s, borderless: _b, props: nestedProps, ...flatProps } = card;
+    const { type: _t, span: _s, props: nestedProps, ...flatProps } = card;
     const effectiveProps = { ...(nestedProps || {}), ...flatProps };
     const content = <Component key={index} {...effectiveProps} />;
-    // Card types that always render without the glass box wrapper
-    const BORDERLESS = new Set<string>();
-    // These card types get the glass border + bg but NO internal padding (flush fill)
-    const FLUSH_ROUNDED = new Set<string>();
-    if (BORDERLESS.has(card.type) || card.borderless) return content;
-    if (FLUSH_ROUNDED.has(card.type)) {
-        return (
-            <div className="h-full overflow-hidden" style={{
-                background: 'var(--theme-card-bg)',
-                border: '1px solid var(--theme-card-border)',
-                borderRadius: '0.75rem',
-                backdropFilter: 'blur(var(--theme-card-blur))',
-                animation: 'card-enter 0.5s ease both',
-                animationDelay: `${index * 100}ms`,
-            }}>
-                {content}
-            </div>
-        );
-    }
+
     return (
         <div className="card-glass h-full" style={{ animationDelay: `${index * 100}ms` }}>
             {content}
