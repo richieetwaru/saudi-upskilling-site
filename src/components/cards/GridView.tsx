@@ -411,12 +411,12 @@ const MobileCarousel: React.FC<{
     }, [pauseAutoScroll]);
 
     return (
-        <div style={{ position: 'fixed', bottom: '16px', left: 0, right: 0, zIndex: 10 }}>
+        <div style={{ position: 'fixed', bottom: '40px', left: 0, right: 0, zIndex: 10 }}>
             {/* Carousel — portrait cards anchored to bottom of viewport */}
             <div
                 ref={scrollRef}
                 className="mobile-carousel flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
-                style={{ height: '55vh' }}
+                style={{ height: '50vh' }}
                 onScroll={handleScroll}
                 onTouchStart={handleTouchStart}
                 onMouseDown={handleTouchStart}
@@ -426,7 +426,7 @@ const MobileCarousel: React.FC<{
                         <div
                             key={`skel-${card.type}-${i}`}
                             className="snap-start shrink-0 px-4"
-                            style={{ width: '100vw', height: '55vh' }}
+                            style={{ width: '100vw', height: '50vh' }}
                         >
                             <div className="card-glass h-full rounded-xl skeleton-shimmer-bg" />
                         </div>
@@ -435,7 +435,7 @@ const MobileCarousel: React.FC<{
                         <div
                             key={`${card.type}-${i}`}
                             className="snap-start shrink-0 px-4"
-                            style={{ width: '100vw', height: '55vh' }}
+                            style={{ width: '100vw', height: '50vh' }}
                         >
                             <div className="h-full overflow-auto">
                                 {renderCard(card, i)}
