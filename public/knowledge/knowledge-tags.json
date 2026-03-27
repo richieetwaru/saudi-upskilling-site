@@ -1,22 +1,36 @@
 {
-  "version": "1.0",
-  "description": "Semantic tags for RAG retrieval of Saudi Upskilling knowledge files",
+  "version": "2.0",
+  "description": "Semantic tags for RAG retrieval — Saudi Upskilling Intelligence",
   "files": {
     "jobs_database.md": {
       "tags": ["jobs", "careers", "hiring", "salary", "employment", "vacancies", "apply", "openings", "companies", "sectors"],
-      "triggers": ["find me a job", "job openings", "who is hiring", "career opportunities", "salary", "apply", "work in", "positions available"]
+      "triggers": ["find me a job", "job openings", "who is hiring", "career opportunities", "salary", "apply", "work in", "positions available"],
+      "cardTypes": ["job"]
     },
     "skills_catalog.md": {
       "tags": ["skills", "competencies", "proficiency", "learning", "certifications", "development", "expertise", "demand"],
-      "triggers": ["what skills", "skill gap", "in demand", "learn", "improve", "certifications", "update my skills", "what should I study"]
+      "triggers": ["what skills", "skill gap", "in demand", "learn", "improve", "certifications", "update my skills", "what should I study"],
+      "cardTypes": ["skill", "assessment"]
     },
     "training_programs.md": {
       "tags": ["training", "programs", "courses", "education", "bootcamp", "academy", "certification", "free", "online", "HRDF", "scholarship"],
-      "triggers": ["training program", "where to study", "free courses", "start learning", "enroll", "bootcamp", "academy", "HRDF", "Tamheer", "Doroob", "how to get certified"]
+      "triggers": ["training program", "where to study", "free courses", "start learning", "enroll", "bootcamp", "academy", "HRDF", "Tamheer", "Doroob"],
+      "cardTypes": ["training"]
     },
     "interview_preparation.md": {
       "tags": ["interview", "preparation", "tips", "questions", "practice", "behavioral", "technical", "workplace", "culture"],
-      "triggers": ["prepare for interview", "interview tips", "common questions", "practice interview", "what to expect", "how to answer", "interview prep"]
+      "triggers": ["prepare for interview", "interview tips", "common questions", "practice interview", "what to expect"],
+      "cardTypes": ["interview", "schedule"]
+    },
+    "candidate_journey.md": {
+      "tags": ["journey", "stages", "onboarding", "progress", "career path", "next step", "flow", "coaching"],
+      "triggers": ["get started", "what should I do", "my journey", "next step", "where am I", "coach me", "help me"],
+      "cardTypes": ["onboarding", "coach", "progress"]
+    },
+    "offers_contracts.md": {
+      "tags": ["offer", "contract", "salary", "HRDF", "funding", "benefits", "Saudization", "Nitaqat", "employment law"],
+      "triggers": ["my offer", "job offer", "contract", "HRDF funding", "salary range", "benefits", "accept offer"],
+      "cardTypes": ["offer"]
     }
   }
 }

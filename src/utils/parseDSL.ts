@@ -148,9 +148,10 @@ const ALL_ITEM_PREFIXES = new Set(Object.values(CONTAINER_ITEM_PREFIXES));
 const FLAT_TYPES        = new Set([
     'stat', 'callout', 'person-card', 'relationship-card',
     'incident-card', 'info-card', 'country-card', 'image-card',
-    // New card types
+    // Card types
     'data-table', 'tile-grid', 'spotlight',
     'job', 'skill', 'training', 'interview',
+    'onboarding', 'assessment', 'coach', 'offer', 'progress', 'schedule',
 ]);
 
 // ── Item parsers ──────────────────────────────────────────────────────────────

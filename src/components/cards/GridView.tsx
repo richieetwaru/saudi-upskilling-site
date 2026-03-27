@@ -6,13 +6,16 @@ import type { CardDef } from '@/types/cards';
 import {
     DataTableCard, TileGridCard, SpotlightCard,
     JobCard, SkillCard, TrainingCard, InterviewCard,
+    OnboardingCard, AssessmentCard, CoachCard,
+    OfferCard, ProgressCard, ScheduleCard,
 } from '@/components/cards';
 
 /* ═══════════════════════════════════════════════════════════
-   GridView — 7 Card Types
+   GridView — 13 Card Types
 
    Data:     data-table, tile-grid, spotlight
    Domain:   job, skill, training, interview
+   Journey:  onboarding, assessment, coach, offer, progress, schedule
    ═══════════════════════════════════════════════════════════ */
 
 /* ═══ Types ═══ */
@@ -35,6 +38,12 @@ const CARD_MAP: Record<string, React.FC<any>> = {
     'skill': SkillCard,
     'training': TrainingCard,
     'interview': InterviewCard,
+    'onboarding': OnboardingCard,
+    'assessment': AssessmentCard,
+    'coach': CoachCard,
+    'offer': OfferCard,
+    'progress': ProgressCard,
+    'schedule': ScheduleCard,
 };
 
 /* ═══ Card Size Tiers ═══ */
@@ -42,6 +51,8 @@ const CARD_MAP: Record<string, React.FC<any>> = {
 const CARD_SIZE: Record<string, number> = {
     'data-table': 3, 'tile-grid': 3, 'spotlight': 3,
     'job': 3, 'skill': 3, 'training': 3, 'interview': 3,
+    'onboarding': 3, 'assessment': 3, 'coach': 3,
+    'offer': 3, 'progress': 3, 'schedule': 3,
 };
 
 function getRowWeight(rowCards: CardDef[]): number {
@@ -522,7 +533,7 @@ export const GridView: React.FC<GridViewProps> = ({
             _reportedUnknownTypes = new Set<string>(unknownTypes);
             informTele(
                 `[UNKNOWN CARD TYPE] ${unknownTypes.map(t => `"${t}"`).join(', ')} — rendered as blank slot(s). ` +
-                `Check spelling. Valid: data-table, tile-grid, spotlight, job, skill, training, interview.`
+                `Check spelling. Valid: data-table, tile-grid, spotlight, job, skill, training, interview, onboarding, assessment, coach, offer, progress, schedule.`
             );
         }
     }, [layout, cards.length, isHybrid, rows, clampCount, resolvedLayout]);
