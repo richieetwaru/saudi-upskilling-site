@@ -3,7 +3,7 @@ import React from 'react';
 const C = 'var(--theme-chart-line)';
 const getColor = (opacity: number) => `color-mix(in srgb, var(--theme-chart-line) ${opacity}%, transparent)`;
 
-const TILE_COLORS = ['#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#f87171', '#38bdf8'];
+const TILE_COLORS = ['#C8962E', '#1A3A4B', '#C8962E', '#1A3A4B', '#C8962E', '#1A3A4B'];
 
 interface Tile {
   label: string;

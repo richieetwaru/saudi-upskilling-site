@@ -1,90 +1,96 @@
 # Show Prompt — Saudi Upskilling Intelligence
 
-Use the `show_component` tool to display visual cards. On mobile, cards appear one at a time in a swipeable portrait carousel overlaying the avatar.
+Cards appear one at a time in a swipeable portrait carousel on mobile. Each card must be self-contained.
 
-## Available Card Types (3 only)
+## Card Types (7)
+
+### `job`
+A job listing with apply button. Show multiple jobs as separate cards.
+
+Props: `title`, `company?`, `location?`, `salary?`, `type?` (e.g. "Full-time"), `tags?` (string[]), `description?`, `posted?`
+
+### `skill`
+A skill profile with progress and update button. Show multiple skills as separate cards.
+
+Props: `name`, `level?` (e.g. "Intermediate"), `progress?` (0-100), `category?`, `demand?` (e.g. "High"), `description?`, `relatedJobs?` (string[])
+
+### `training`
+A training program with start button. Show multiple programs as separate cards.
+
+Props: `title`, `provider?`, `duration?`, `format?` (e.g. "Online"), `cost?`, `level?`, `description?`, `modules?` (string[]), `certificate?` (boolean)
+
+### `interview`
+Interview tips and practice questions with practice button. Show multiple topics as separate cards.
+
+Props: `title`, `role?`, `difficulty?` (Easy/Medium/Hard), `tips?` (array of `{text, type?}` where type is "tip"|"question"|"warning"), `questions?` (string[]), `description?`
 
 ### `data-table`
-Header stats + tabular data rows. Use for comparisons, program listings, structured data.
+Header stats + tabular data.
 
-Props:
-- `title`: string — section heading
-- `headerStats`: array of `{label, value, change?}` — highlighted metrics at top
-- `columns`: string[] — column headers
-- `rows`: array of `{cells: string[]}` — table rows
-- `footer`: string — optional footer note
+Props: `title?`, `headerStats?` (`{label, value, change?}`[]), `columns?` (string[]), `rows?` (`{cells: string[]}`[]), `footer?`
 
 ### `tile-grid`
-Title + grid of mini tiles. Use for category overviews, feature highlights, sector breakdowns.
+Mini tiles in a 2-column grid.
 
-Props:
-- `title`: string — heading
-- `subtitle`: string — description text
-- `tiles`: array of `{label, value?, icon?}` — up to 6 tiles in a 2-column grid
-- `footer`: string — optional footer
+Props: `title?`, `subtitle?`, `tiles?` (`{label, value?, icon?}`[] up to 6), `footer?`
 
 ### `spotlight`
-Avatar/image + area chart. Use for profiles, trend data, sector deep-dives.
+Avatar/image + area chart trend line.
 
-Props:
-- `title`: string — name or heading
-- `subtitle`: string — role or description
-- `imageUrl`: string — profile image URL (optional, falls back to initial)
-- `tag`: string — small label pill (e.g. "Trending", "New")
-- `points`: array of `{label, value}` — data points for the area chart
-- `caption`: string — chart caption
+Props: `title?`, `subtitle?`, `imageUrl?`, `tag?`, `points?` (`{label, value}`[]), `caption?`
 
-## Important Rules
+## Rules
 
-- Do NOT set `badge`, `footerLeft`, or `footerRight` on scenes — the UI does not display them
-- Only use these 3 card types: `data-table`, `tile-grid`, `spotlight`
-- Each card must be self-contained — it displays alone in a swipeable carousel
-- Keep content concise — these are visual aids on a portrait mobile screen
+- Do NOT set `badge`, `footerLeft`, or `footerRight` on scenes
+- Each card is one swipeable panel — keep content concise
+- Use `job`, `skill`, `training`, `interview` for domain content
+- Use `data-table`, `tile-grid`, `spotlight` for data visualization
+- Buttons on cards send actions back to the voice agent via onAction
 
-## Example Scene
+## Example
 
 ```json
 {
-  "title": "Your Upskilling Path",
   "cards": [
     {
-      "type": "tile-grid",
-      "title": "TOP SECTORS",
-      "subtitle": "Fastest growing industries in Saudi Arabia",
-      "tiles": [
-        {"label": "Technology", "value": "42%", "icon": "T"},
-        {"label": "Healthcare", "value": "28%", "icon": "H"},
-        {"label": "Finance", "value": "15%", "icon": "F"},
-        {"label": "Energy", "value": "10%", "icon": "E"}
-      ]
+      "type": "job",
+      "title": "Cloud Engineer",
+      "company": "Saudi Aramco",
+      "location": "Riyadh",
+      "salary": "18K-25K SAR/mo",
+      "type": "Full-time",
+      "tags": ["AWS", "Kubernetes", "Python"],
+      "posted": "2 days ago"
     },
     {
-      "type": "data-table",
-      "title": "PROGRAM COMPARISON",
-      "headerStats": [
-        {"label": "Programs", "value": "340+"},
-        {"label": "Avg Duration", "value": "4 mo"}
-      ],
-      "columns": ["Program", "Duration", "Cost"],
-      "rows": [
-        {"cells": ["Tuwaiq Academy", "6 months", "Free"]},
-        {"cells": ["Saudi Digital Academy", "4 months", "Free"]},
-        {"cells": ["Udacity Nanodegree", "3 months", "Subsidized"]}
-      ]
+      "type": "training",
+      "title": "AWS Cloud Practitioner",
+      "provider": "Saudi Digital Academy",
+      "duration": "3 months",
+      "format": "Online",
+      "cost": "Free",
+      "certificate": true,
+      "modules": ["Cloud Concepts", "Security", "Architecture", "Billing"]
     },
     {
-      "type": "spotlight",
-      "title": "Tech Sector Growth",
-      "subtitle": "Year-over-year demand trend",
-      "tag": "Trending",
-      "points": [
-        {"label": "2020", "value": 20},
-        {"label": "2021", "value": 28},
-        {"label": "2022", "value": 35},
-        {"label": "2023", "value": 42},
-        {"label": "2024", "value": 55}
-      ],
-      "caption": "Technology leads all sectors in job creation"
+      "type": "skill",
+      "name": "Cloud Computing",
+      "level": "Beginner",
+      "progress": 25,
+      "category": "Technology",
+      "demand": "High",
+      "relatedJobs": ["Cloud Engineer", "DevOps", "Solutions Architect"]
+    },
+    {
+      "type": "interview",
+      "title": "Cloud Engineer Interview",
+      "role": "Cloud Engineer at Saudi Aramco",
+      "difficulty": "Medium",
+      "tips": [
+        {"text": "Explain your experience with AWS services", "type": "question"},
+        {"text": "Prepare examples of cost optimization", "type": "tip"},
+        {"text": "Know the shared responsibility model", "type": "tip"}
+      ]
     }
   ]
 }

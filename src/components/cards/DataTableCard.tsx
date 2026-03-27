@@ -41,7 +41,7 @@ export const DataTableCard: React.FC<DataTableCardProps> = ({
               <div className="font-data text-lg font-bold" style={{ color: C }}>{stat.value}</div>
               <div className="font-voice text-xs mt-0.5" style={{ color: getColor(60) }}>{stat.label}</div>
               {stat.change && (
-                <div className="font-data text-xs mt-0.5" style={{ color: stat.change.startsWith('-') ? '#ef4444' : '#22c55e' }}>
+                <div className="font-data text-xs mt-0.5" style={{ color: stat.change.startsWith('-') ? '#ef4444' : '#C8962E' }}>
                   {stat.change}
                 </div>
               )}

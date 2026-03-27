@@ -5,14 +5,14 @@ import { informTele } from '@/utils/informTele';
 import type { CardDef } from '@/types/cards';
 import {
     DataTableCard, TileGridCard, SpotlightCard,
+    JobCard, SkillCard, TrainingCard, InterviewCard,
 } from '@/components/cards';
 
 /* ═══════════════════════════════════════════════════════════
-   GridView — Composable Grid Template (3 Card Types)
+   GridView — 7 Card Types
 
-   data-table  — header stats + tabular rows
-   tile-grid   — title + grid of mini tiles
-   spotlight   — avatar/image + area chart
+   Data:     data-table, tile-grid, spotlight
+   Domain:   job, skill, training, interview
    ═══════════════════════════════════════════════════════════ */
 
 /* ═══ Types ═══ */
@@ -31,14 +31,17 @@ const CARD_MAP: Record<string, React.FC<any>> = {
     'data-table': DataTableCard,
     'tile-grid': TileGridCard,
     'spotlight': SpotlightCard,
+    'job': JobCard,
+    'skill': SkillCard,
+    'training': TrainingCard,
+    'interview': InterviewCard,
 };
 
 /* ═══ Card Size Tiers ═══ */
 
 const CARD_SIZE: Record<string, number> = {
-    'data-table': 3,
-    'tile-grid': 3,
-    'spotlight': 3,
+    'data-table': 3, 'tile-grid': 3, 'spotlight': 3,
+    'job': 3, 'skill': 3, 'training': 3, 'interview': 3,
 };
 
 function getRowWeight(rowCards: CardDef[]): number {
@@ -519,7 +522,7 @@ export const GridView: React.FC<GridViewProps> = ({
             _reportedUnknownTypes = new Set<string>(unknownTypes);
             informTele(
                 `[UNKNOWN CARD TYPE] ${unknownTypes.map(t => `"${t}"`).join(', ')} — rendered as blank slot(s). ` +
-                `Check spelling. Valid: data-table, tile-grid, spotlight.`
+                `Check spelling. Valid: data-table, tile-grid, spotlight, job, skill, training, interview.`
             );
         }
     }, [layout, cards.length, isHybrid, rows, clampCount, resolvedLayout]);
