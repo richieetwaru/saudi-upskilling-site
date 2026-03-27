@@ -47,21 +47,6 @@ export function ControlBar() {
   return (
     <div className={`fixed top-4 right-4 md:top-6 md:right-8 ${zIndex} inline-flex items-center gap-2 sm:gap-3 transition-all duration-300 ease-in-out`}>
 
-      {/* Chat toggle */}
-      {isConnected && (
-        <button
-          onClick={handleToggleChat}
-          className={`transition-all duration-300 ${
-            isChatPanelOpen
-              ? 'text-red-500 hover:text-red-400'
-              : iconColor
-          }`}
-          title={isChatPanelOpen ? 'Close chat' : 'Open chat'}
-        >
-          {isChatPanelOpen ? <X className="w-5 h-5" /> : <MessageCircle className="w-5 h-5" />}
-        </button>
-      )}
-
       {/* Mic toggle */}
       {isConnected && (
         <button
