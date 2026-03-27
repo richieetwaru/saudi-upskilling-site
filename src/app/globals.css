@@ -356,10 +356,10 @@ body.tele-nav-pending .nav-skeleton-overlay {
     -webkit-backdrop-filter: blur(2px);
     padding: 1.5rem;
   }
-  .card-glass h3 { font-size: 2rem !important; line-height: 1.15 !important; }
-  .card-glass p, .card-glass .font-voice { font-size: 1.25rem !important; line-height: 1.5 !important; }
-  .card-glass .font-data { font-size: 1.125rem !important; line-height: 1.4 !important; }
-  .card-glass span { font-size: max(1rem, inherit) !important; }
+  .card-glass h3 { font-size: 1.6rem !important; line-height: 1.2 !important; }
+  .card-glass p, .card-glass .font-voice { font-size: 1rem !important; line-height: 1.5 !important; }
+  .card-glass .font-data { font-size: 0.9rem !important; line-height: 1.4 !important; }
+  .card-glass span { font-size: max(0.8rem, inherit) !important; }
   .card-glass { overflow-y: auto !important; }
 }
 
