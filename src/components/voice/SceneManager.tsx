@@ -25,9 +25,6 @@ export function SceneManager() {
   const navigateSceneBack = useVoiceSessionStore((s) => s.navigateSceneBack);
   const sceneHistory = useVoiceSessionStore((s) => s.sceneHistory);
   const tellAgent = useVoiceSessionStore((s) => s.tellAgent);
-  const avatarVideoTrack = useVoiceSessionStore((s) => s.avatarVideoTrack);
-  const avatarEnabled = useVoiceSessionStore((s) => s.avatarEnabled);
-  const avatarVisible = useVoiceSessionStore((s) => s.avatarVisible);
   const skeletonLayout = useVoiceSessionStore((s) => s.skeletonLayout);
 
   const handleAction = useCallback(
@@ -55,24 +52,8 @@ export function SceneManager() {
   const hasHistory = sceneHistory.length > 1;
 
   return (
-    <div id="scene-root" className="relative flex flex-col w-full h-full min-h-0 text-white">
-      {/* Avatar background layer */}
-      {avatarEnabled && avatarVisible && avatarVideoTrack && (
-        <div className="absolute inset-0 z-0 opacity-30">
-          <video
-            ref={(el) => {
-              if (el && avatarVideoTrack) {
-                avatarVideoTrack.attach(el);
-              }
-            }}
-            autoPlay
-            playsInline
-            muted
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 scene-gradient-overlay" />
-        </div>
-      )}
+    <div id="scene-root" className="relative flex flex-col w-full h-full min-h-0 text-[#1A3A4B]">
+      {/* Avatar background handled by BackgroundLayer — no duplicate video here */}
 
       {/* Header — badge + optional back button */}
       <header className="relative z-10 flex items-center justify-between px-6 py-3 shrink-0">
@@ -80,7 +61,7 @@ export function SceneManager() {
           {hasHistory && (
             <button
               onClick={navigateSceneBack}
-              className="flex items-center gap-1 text-sm text-white/60 hover:text-white transition-colors"
+              className="flex items-center gap-1 text-sm text-[#5A6B75] hover:text-[#1A3A4B] transition-colors"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -100,7 +81,7 @@ export function SceneManager() {
           )}
         </div>
         {currentScene?.badge && (
-          <span className="text-xs font-medium text-white/50 tracking-wider uppercase font-data">
+          <span className="text-xs font-medium text-[#5A6B75] tracking-wider uppercase font-data">
             {currentScene.badge}
           </span>
         )}
@@ -115,7 +96,7 @@ export function SceneManager() {
             </h1>
           )}
           {currentScene?.subtitle && (
-            <p className="text-sm text-white/60 mt-1 font-voice">
+            <p className="text-sm text-[#5A6B75] mt-1 font-voice">
               {currentScene.subtitle}
             </p>
           )}
@@ -130,7 +111,7 @@ export function SceneManager() {
           /* Custom layout: full control over rendering */
           <Suspense
             fallback={
-              <div className="animate-pulse h-full bg-white/5 rounded-xl" />
+              <div className="animate-pulse h-full bg-[#1A3A4B]/5 rounded-xl" />
             }
           >
             {(() => {
@@ -149,7 +130,7 @@ export function SceneManager() {
           /* Standard GridView: grid/mosaic/vertical layouts */
           <Suspense
             fallback={
-              <div className="animate-pulse h-full bg-white/5 rounded-xl" />
+              <div className="animate-pulse h-full bg-[#1A3A4B]/5 rounded-xl" />
             }
           >
             <GridView
@@ -160,7 +141,7 @@ export function SceneManager() {
             />
           </Suspense>
         ) : (
-          <div className="flex items-center justify-center h-full text-white/40 font-data">
+          <div className="flex items-center justify-center h-full text-[#5A6B75]/60 font-data">
             Awaiting data...
           </div>
         )}
@@ -168,7 +149,7 @@ export function SceneManager() {
 
       {/* Footer */}
       {(currentScene?.footerLeft || currentScene?.footerRight) && (
-        <footer className="relative z-10 flex items-center justify-between px-6 py-3 text-xs text-white/40 shrink-0 font-data">
+        <footer className="relative z-10 flex items-center justify-between px-6 py-3 text-xs text-[#5A6B75]/60 shrink-0 font-data">
           <span>{currentScene.footerLeft || ''}</span>
           <span>{currentScene.footerRight || ''}</span>
         </footer>
@@ -210,21 +191,21 @@ function SceneSkeleton({ layout }: { layout: string }) {
                   <div className="p-4 space-y-3">
                     <div
                       className="h-3 rounded-full w-1/3"
-                      style={{ background: 'rgba(255,255,255,0.12)', animationDelay: delay }}
+                      style={{ background: 'rgba(26,58,75,0.08)', animationDelay: delay }}
                     />
                     <div
                       className="h-2 rounded-full w-2/3"
-                      style={{ background: 'rgba(255,255,255,0.08)', animationDelay: `calc(${delay} + 80ms)` }}
+                      style={{ background: 'rgba(26,58,75,0.06)', animationDelay: `calc(${delay} + 80ms)` }}
                     />
                     {rowIdx > 0 && (
                       <>
                         <div
                           className="h-2 rounded-full w-1/2"
-                          style={{ background: 'rgba(255,255,255,0.06)', animationDelay: `calc(${delay} + 160ms)` }}
+                          style={{ background: 'rgba(26,58,75,0.04)', animationDelay: `calc(${delay} + 160ms)` }}
                         />
                         <div
                           className="h-8 rounded-lg w-full mt-2"
-                          style={{ background: 'rgba(255,255,255,0.05)', animationDelay: `calc(${delay} + 240ms)` }}
+                          style={{ background: 'rgba(26,58,75,0.03)', animationDelay: `calc(${delay} + 240ms)` }}
                         />
                       </>
                     )}

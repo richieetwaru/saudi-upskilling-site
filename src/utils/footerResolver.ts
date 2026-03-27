@@ -1,6 +1,5 @@
 /**
- * Minimal footer resolver for the starter template.
- * The Small Lift version has Tesla-specific rules — this is generic.
+ * Footer resolver — generates left/right footer text for scene cards.
  */
 export function resolveFooters(badge?: string): { left: string; right: string } {
   const timestamp = new Date().toLocaleString('en-US', {
@@ -13,6 +12,6 @@ export function resolveFooters(badge?: string): { left: string; right: string } 
 
   return {
     left: badge ? `${badge} · ${timestamp}` : timestamp,
-    right: 'Powered by Mobeus',
+    right: 'Built by ThoughtWorks · Powered by Mobeus',
   };
 }

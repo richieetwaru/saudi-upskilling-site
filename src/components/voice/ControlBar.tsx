@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Mic, MicOff, MessageCircle, X, ArrowRight } from 'lucide-react';
+import { Mic, MicOff, MessageCircle, X } from 'lucide-react';
 import { useVoiceSessionStore } from '@/lib/stores/voice-session-store';
 import { assets } from '@/assets';
 import { playUISound, playGlassSound } from '@/utils/soundGenerator';
@@ -10,32 +9,18 @@ export function ControlBar() {
   const sessionState = useVoiceSessionStore((s) => s.sessionState);
   const isMuted = useVoiceSessionStore((s) => s.isMuted);
   const isChatPanelOpen = useVoiceSessionStore((s) => s.isChatPanelOpen);
-  const sceneActive = useVoiceSessionStore((s) => s.sceneActive);
-  const theme = useVoiceSessionStore((s) => s.theme);
   const connect = useVoiceSessionStore((s) => s.connect);
   const disconnect = useVoiceSessionStore((s) => s.disconnect);
   const toggleMute = useVoiceSessionStore((s) => s.toggleMute);
   const toggleChatPanel = useVoiceSessionStore((s) => s.toggleChatPanel);
   const avatarThumbnailUrl = useVoiceSessionStore((s) => s.avatarThumbnailUrl);
 
-  const [showTalkButton, setShowTalkButton] = useState(false);
-
   const isConnected = sessionState === 'connected';
   const isConnecting = sessionState === 'connecting';
   const isIdle = sessionState === 'idle' || sessionState === 'error';
 
-  const isDark = theme === 'dark';
-  const iconColor = (!sceneActive || isDark) ? 'text-white/70 hover:text-white' : 'text-gray-600 hover:text-gray-900';
-  const iconBg = (!sceneActive || isDark) ? 'bg-white/10 hover:bg-white/20' : 'bg-black/5 hover:bg-black/10';
-
-  // Delay TALK button appearance by 2s
-  useEffect(() => {
-    if (isIdle) {
-      const timer = setTimeout(() => setShowTalkButton(true), 2000);
-      return () => clearTimeout(timer);
-    }
-    setShowTalkButton(false);
-  }, [isIdle]);
+  const iconColor = 'text-[#1A3A4B]/70 hover:text-[#1A3A4B]';
+  const iconBg = 'bg-[#1A3A4B]/5 hover:bg-[#1A3A4B]/10';
 
   const handleConnect = () => {
     playGlassSound();
@@ -57,7 +42,6 @@ export function ControlBar() {
     disconnect();
   };
 
-  // z-100 when chat open so icons float above chat panel (z-50)
   const zIndex = isChatPanelOpen ? 'z-[100]' : 'z-[60]';
 
   return (
@@ -70,7 +54,7 @@ export function ControlBar() {
           className={`transition-all duration-300 ${
             isChatPanelOpen
               ? 'text-red-500 hover:text-red-400'
-              : `${iconColor}`
+              : iconColor
           }`}
           title={isChatPanelOpen ? 'Close chat' : 'Open chat'}
         >
@@ -93,21 +77,11 @@ export function ControlBar() {
         </button>
       )}
 
-      {/* TALK button (idle) */}
-      {isIdle && showTalkButton && (
-        <button
-          onClick={handleConnect}
-          className="start-button inline-flex items-center gap-2 rounded-none text-sm"
-        >
-          TALK <ArrowRight className="w-3.5 h-3.5" />
-        </button>
-      )}
-
-      {/* Connecting indicator (pulsing button) */}
+      {/* Connecting indicator */}
       {isConnecting && (
         <button
           disabled
-          className="start-button inline-flex items-center gap-2 rounded-none text-sm opacity-80 connecting-pulse"
+          className="start-button inline-flex items-center gap-2 text-sm opacity-80 connecting-pulse"
         >
           CONNECTING...
         </button>
@@ -128,19 +102,19 @@ export function ControlBar() {
       <div
         className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 transition-all cursor-pointer ${
           isConnecting
-            ? 'border-[rgba(45,64,89,0.6)] bg-[rgba(45,64,89,0.1)] animate-pulse'
+            ? 'border-[#1A3A4B]/40 bg-[#1A3A4B]/5 animate-pulse'
             : isConnected
-              ? 'border-[rgba(45,64,89,0.8)] shadow-lg'
-              : 'border-white/30 shadow-lg'
+              ? 'border-[#1A3A4B]/60 shadow-lg'
+              : 'border-[#1A3A4B]/20 shadow-lg'
         }`}
         onClick={isIdle ? handleConnect : undefined}
       >
         <img
           src={avatarThumbnailUrl || assets.avatarProfile}
-          alt="Avatar"
+          alt="Magic"
           className={`w-full h-full object-cover rounded-full transition-all duration-300 ${
-            isIdle ? 'brightness-75 hover:brightness-100' :
-            isConnecting ? '' : 'brightness-125'
+            isIdle ? 'brightness-90 hover:brightness-100' :
+            isConnecting ? '' : ''
           }`}
         />
       </div>

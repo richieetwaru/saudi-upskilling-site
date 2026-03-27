@@ -30,71 +30,71 @@
 }
 
 :root {
-  --background: oklch(0.145 0.01 256);
-  --foreground: oklch(0.93 0 0);
-  --card: oklch(0.17 0.01 256);
-  --card-foreground: oklch(0.93 0 0);
-  --popover: oklch(0.17 0.01 256);
-  --popover-foreground: oklch(0.93 0 0);
-  --primary: oklch(0.85 0.15 195);
-  --primary-foreground: oklch(0.145 0.01 256);
-  --secondary: oklch(0.22 0.01 256);
-  --secondary-foreground: oklch(0.93 0 0);
-  --muted: oklch(0.22 0.01 256);
-  --muted-foreground: oklch(0.65 0 0);
-  --accent: oklch(0.22 0.01 256);
-  --accent-foreground: oklch(0.93 0 0);
+  --background: #F0F0F0;
+  --foreground: #1A3A4B;
+  --card: #FFFFFF;
+  --card-foreground: #1A3A4B;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A3A4B;
+  --primary: #1A3A4B;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F0F0F0;
+  --secondary-foreground: #1A3A4B;
+  --muted: #E0E0E0;
+  --muted-foreground: #5A6B75;
+  --accent: #C8962E;
+  --accent-foreground: #FFFFFF;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.3 0.01 256);
-  --input: oklch(0.3 0.01 256);
-  --ring: oklch(0.75 0.15 195);
+  --border: #D0D0D0;
+  --input: #D0D0D0;
+  --ring: #C8962E;
   --radius: 0.625rem;
 
   /* ── Color Palette ── */
-  --color-midnight: #0a0e14;
-  --amber: #00e5ff;
+  --color-midnight: #1A3A4B;
+  --amber: #C8962E;
 
-  /* ── Scene Card Theme — Dark ── */
-  --theme-chart-line: rgba(255, 255, 255, 0.92);
-  --theme-card-data: rgba(255, 255, 255, 0.92);
-  --theme-card-voice: rgba(255, 255, 255, 0.80);
-  --theme-card-bg: rgba(255, 255, 255, 0.10);
-  --theme-card-border: rgba(255, 255, 255, 0.12);
+  /* ── Scene Card Theme — Light ── */
+  --theme-chart-line: #1A3A4B;
+  --theme-card-data: #1A3A4B;
+  --theme-card-voice: #3A5A6B;
+  --theme-card-bg: #FFFFFF;
+  --theme-card-border: #D0D8DD;
   --theme-card-blur: 4px;
-  --theme-card-title: #ffffff;
+  --theme-card-title: #1A3A4B;
 
   /* Scene page-level */
-  --theme-scene-bg: rgba(5, 5, 8, 0.95);
-  --theme-scene-text: #ffffff;
-  --theme-scene-text-muted: #94a3b8;
-  --theme-scene-badge-bg: rgba(255, 255, 255, 0.1);
-  --theme-scene-badge-text: rgba(255, 255, 255, 0.7);
-  --theme-scene-footer: rgba(255, 255, 255, 0.6);
+  --theme-scene-bg: #F0F0F0;
+  --theme-scene-text: #1A3A4B;
+  --theme-scene-text-muted: #5A6B75;
+  --theme-scene-badge-bg: rgba(26, 58, 75, 0.1);
+  --theme-scene-badge-text: #1A3A4B;
+  --theme-scene-footer: #5A6B75;
 
   /* Action buttons */
-  --theme-action-btn: rgba(255, 255, 255, 0.5);
-  --theme-action-btn-hover: rgba(255, 255, 255, 0.8);
+  --theme-action-btn: #5A6B75;
+  --theme-action-btn-hover: #1A3A4B;
 
   /* Chat bubbles */
-  --theme-chat-bubble: rgba(12, 14, 18, 0.85);
-  --theme-chat-text: #e0e0e0;
-  --theme-chat-placeholder: rgba(255, 255, 255, 0.3);
+  --theme-chat-bubble: #FFFFFF;
+  --theme-chat-text: #1A3A4B;
+  --theme-chat-placeholder: #8A9AA5;
 
   /* Video filter */
   --theme-video-brightness: 0.72;
   --theme-video-saturate: 0.9;
 
   /* KPI & badges */
-  --theme-kpi-text: #ffffff;
-  --theme-badge-bg: rgba(255, 255, 255, 0.85);
-  --theme-badge-text: #ffffff;
-  --theme-footer-text: rgba(255, 255, 255, 0.6);
+  --theme-kpi-text: #1A3A4B;
+  --theme-badge-bg: #C8962E;
+  --theme-badge-text: #FFFFFF;
+  --theme-footer-text: #5A6B75;
 }
 
 /* ── Body background ── */
 body {
-  background-color: #0a0e14;
-  color: #e0e0e0;
+  background-color: #F0F0F0;
+  color: #1A3A4B;
   transition: background-color 0.6s ease, color 0.6s ease;
 }
 
@@ -181,31 +181,33 @@ body {
 .btn-action {
   display: inline-flex; align-items: center; justify-content: center;
   padding: 0.75rem 2rem;
-  background: #00e5ff;
-  color: #0a0e14;
+  background: #C8962E;
+  color: #FFFFFF;
   font-family: var(--font-data);
   font-size: 0.875rem; font-weight: 700;
   letter-spacing: 0.05em; text-transform: uppercase;
   transition: all 0.3s ease;
   cursor: pointer;
+  border-radius: 0.375rem;
 }
-.btn-action:hover { transform: translateY(-1px); background: #33ebff; }
+.btn-action:hover { transform: translateY(-1px); background: #B8860B; }
 
 .start-button {
-  background: #00e5ff; color: #0a0e14;
+  background: #C8962E; color: #FFFFFF;
   font-family: var(--font-data);
   font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
   padding: 0.75rem 1.5rem;
   border: none; cursor: pointer;
   transition: all 0.3s ease;
+  border-radius: 0.375rem;
 }
-.start-button:hover { transform: translateY(-1px); background: #33ebff; }
+.start-button:hover { transform: translateY(-1px); background: #B8860B; }
 
 /* ── Connecting Pulse (ripple effect while connecting) ── */
 @keyframes connecting-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(0, 229, 255, 0.4); }
-  70% { box-shadow: 0 0 0 12px rgba(0, 229, 255, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(0, 229, 255, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(200, 150, 46, 0.4); }
+  70% { box-shadow: 0 0 0 12px rgba(200, 150, 46, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(200, 150, 46, 0); }
 }
 .connecting-pulse {
   animation: connecting-pulse 1.5s ease-in-out infinite;
@@ -280,7 +282,6 @@ body {
 .card-glass {
   background: var(--theme-card-bg);
   border: 1px solid var(--theme-card-border);
-  backdrop-filter: blur(var(--theme-card-blur));
   border-radius: 0.75rem;
   padding: 1rem 1.25rem;
   height: 100%;
@@ -288,6 +289,7 @@ body {
   flex-direction: column;
   overflow: hidden;
   container-type: inline-size;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 /* ── Skeleton Bounce ── */
@@ -308,11 +310,11 @@ body {
 .skeleton-shimmer-bg {
   background: linear-gradient(
     90deg,
-    var(--theme-card-bg, rgba(255,255,255,0.05)) 0%,
-    rgba(255,255,255,0.10) 40%,
-    rgba(255,255,255,0.18) 50%,
-    rgba(255,255,255,0.10) 60%,
-    var(--theme-card-bg, rgba(255,255,255,0.05)) 100%
+    var(--theme-card-bg, #F0F0F0) 0%,
+    rgba(26,58,75,0.06) 40%,
+    rgba(26,58,75,0.10) 50%,
+    rgba(26,58,75,0.06) 60%,
+    var(--theme-card-bg, #F0F0F0) 100%
   );
   background-size: 800px 100%;
   animation: skeleton-shimmer 1.6s ease-in-out infinite;
@@ -325,7 +327,7 @@ body {
   opacity: 0;
   transition: opacity 0.12s ease-in;
   pointer-events: none;
-  background: var(--color-midnight, #0a0e14);
+  background: var(--color-midnight, #1A3A4B);
 }
 body.tele-nav-pending .nav-skeleton-overlay {
   opacity: 1;

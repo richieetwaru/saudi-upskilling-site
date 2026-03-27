@@ -5,31 +5,16 @@ import { resolveFooters } from '@/utils/footerResolver';
 import { informTele } from '@/utils/informTele';
 import type { CardDef } from '@/types/cards';
 import {
-    // Core Data (9)
-    KPIStrip, BarChart, DonutChart, LineChart, TableCard,
-    MetricList, AlertCard, StatCard, CalloutCard,
-    // Data Visualization (4)
-    HeatmapCard, TimelineCard, WaterfallCard, StackedBarCard,
-    // People & Org (2)
-    PersonCard, OrgRoster,
-    // Rich Content (4)
-    ChecklistCard, InfoCard, BulletListCard, ImageCard,
-    // Comparison (2)
-    ComparisonTable, RankedListCard,
-    // Operational (3)
-    IncidentCard, PipelineCard, RiskMatrixCard,
-    // Executive Action (2)
-    DecisionCard, DelegationCard,
-    // Cross-Domain Intelligence (4)
-    RelationshipCard, CountryCard, DataClusterCard, CalendarCard,
+    KPIStrip, BarChart, StatCard, CalloutCard,
+    InfoCard, BulletListCard, ImageCard, ChecklistCard,
+    TableCard,
 } from '@/components/cards';
 
 /* ═══════════════════════════════════════════════════════════
-   GridView — Composable Grid Template (30 Card Types)
-   
-   A single template that accepts a layout code and an array
-   of card definitions. The tele fills it dynamically for any
-   executive perspective (CTO, CMO, CFO, HR, GC, AI, etc.).
+   GridView — Composable Grid Template (9 Card Types)
+
+   Accepts a layout code and an array of card definitions.
+   Used by the voice agent to display upskilling data.
    ═══════════════════════════════════════════════════════════ */
 
 /* ═══ Types ═══ */
@@ -42,75 +27,30 @@ interface GridViewProps {
     onLogoClick?: () => void;
 }
 
-/* ═══ Card Renderer — 30 Card Types ═══ */
+/* ═══ Card Renderer ═══ */
 
 const CARD_MAP: Record<string, React.FC<any>> = {
-    // Core Data (9)
     'kpi-strip': KPIStrip,
     'bar-chart': BarChart,
-    'donut': DonutChart,
-    'line-chart': LineChart,
-    'table': TableCard,
-    'metric-list': MetricList,
-    'alert': AlertCard,
     'stat': StatCard,
     'callout': CalloutCard,
-    // Data Visualization (4)
-    'heatmap': HeatmapCard,
-    'timeline': TimelineCard,
-    'waterfall': WaterfallCard,
-    'stacked-bar': StackedBarCard,
-    // People & Organization (2)
-    'person-card': PersonCard,
-    'org-roster': OrgRoster,
-    // Rich Content (4)
-    'checklist': ChecklistCard,
     'info-card': InfoCard,
     'bullet-list': BulletListCard,
     'image-card': ImageCard,
-    // Comparison (2)
-    'comparison-table': ComparisonTable,
-    'ranked-list': RankedListCard,
-    // Operational (3)
-    'incident-card': IncidentCard,
-    'pipeline-card': PipelineCard,
-    'pipeline': PipelineCard,       // alias — parseDSL emits 'pipeline', not 'pipeline-card'
-    'risk-matrix': RiskMatrixCard,
-    // Executive Action (2)
-    'decision-card': DecisionCard,
-    'delegation-card': DelegationCard,
-    // Cross-Domain Intelligence (4)
-    'relationship-card': RelationshipCard,
-    'country-card': CountryCard,
-    'data-cluster': DataClusterCard,
-    'calendar': CalendarCard,
-    // Aliases — common hallucinated type names
-    'profile-roster': OrgRoster,
-    'area-chart': LineChart,
+    'checklist': ChecklistCard,
+    'table': TableCard,
+    // Aliases
     'progress': BarChart,
 };
 
 /* ═══ Card Size Tiers — flex-grow weights for row height distribution ═══ */
 
 const CARD_SIZE: Record<string, number> = {
-    // sm (compact) — strip only → flex-grow: 1
     'kpi-strip': 1,
-    // md (standard) — stats, lists, moderate content → flex-grow: 2
     'stat': 2, 'callout': 2,
-    'image-card': 2, 'person-card': 2,
-    'alert': 2, 'metric-list': 2,
-    'bullet-list': 2, 'info-card': 2,
-    'data-cluster': 2, 'checklist': 2, 'org-roster': 2,
-    'pipeline-card': 2, 'ranked-list': 2,
-    'timeline': 2, 'calendar': 2,
-    // lg (expansive) — charts, tables, maps → flex-grow: 3
-    'bar-chart': 3, 'donut': 3, 'line-chart': 3, 'table': 3,
-    'heatmap': 3, 'waterfall': 3, 'stacked-bar': 3,
-    'comparison-table': 3, 'incident-card': 3, 'risk-matrix': 3,
-    // Executive Action
-    'decision-card': 2, 'delegation-card': 2,
-    // Cross-Domain Intelligence
-    'relationship-card': 2, 'country-card': 2,
+    'image-card': 2, 'info-card': 2,
+    'bullet-list': 2, 'checklist': 2,
+    'bar-chart': 3, 'table': 3,
 };
 
 function getRowWeight(rowCards: CardDef[]): number {
@@ -386,8 +326,6 @@ function parseLayout(layout: string, cardCount: number, maxRows: number = 3): Pa
 
 /* ═══ Main Component ═══ */
 
-const C = '#443e44';
-
 /* ═══ Skeleton Shimmer — 250ms loading state ═══ */
 const CardSkeleton: React.FC<{ delay?: number }> = ({ delay = 0 }) => (
     <div
@@ -463,9 +401,8 @@ export const GridView: React.FC<GridViewProps> = ({
             _reportedUnknownTypes = new Set<string>(unknownTypes);
             informTele(
                 `[UNKNOWN CARD TYPE] ${unknownTypes.map(t => `"${t}"`).join(', ')} — rendered as blank slot(s). ` +
-                `Check spelling. Valid: stat, callout, kpi-strip, metric-list, bullet-list, ` +
-                `bar-chart, donut, timeline, checklist, pipeline, ranked-list, person-card, alert, ` +
-                `info-card, table, incident-card, relationship-card, country-card, image-card.`
+                `Check spelling. Valid: stat, callout, kpi-strip, bar-chart, ` +
+                `bullet-list, checklist, info-card, image-card, table.`
             );
         }
     }, [layout, cards.length, isHybrid, rows, clampCount, resolvedLayout]);
@@ -489,14 +426,14 @@ export const GridView: React.FC<GridViewProps> = ({
     if (displayCards.length === 0) {
         return (
             <SlideLayout badge={badge} footerLeft={footerLeft || ''} footerRight={footerRight || ''} onLogoClick={onLogoClick}>
-                <div className="flex-1 flex items-center justify-center" style={{ color: 'rgba(255,255,255,0.2)' }}>
+                <div className="flex-1 flex items-center justify-center" style={{ color: 'var(--muted-foreground, #5A6B75)' }}>
                     <span className="font-data text-base uppercase tracking-widest">Awaiting data…</span>
                 </div>
             </SlideLayout>
         );
     }
 
-    /* ═══ MOBILE: Single-column scrollable stack ═══ */
+    /* ═══ MOBILE: Single-column scrollable stack — native feel ═══ */
     if (isMobile) {
         return (
             <SlideLayout
@@ -505,26 +442,26 @@ export const GridView: React.FC<GridViewProps> = ({
                 footerRight={footerRight || ""}
                 onLogoClick={onLogoClick}
             >
-                <div className="relative flex flex-col gap-3 pb-4">
-                    {/* Nav-pending skeleton overlay — always in DOM, shown via body.tele-nav-pending CSS */}
+                <div className="relative flex flex-col gap-3 pb-6 px-1">
+                    {/* Nav-pending skeleton overlay */}
                     <div
                         className="nav-skeleton-overlay absolute inset-0 z-20 flex flex-col gap-3"
                         style={{ pointerEvents: 'none' }}
                     >
                         {displayCards.map((card, i) => (
-                            <div key={`${card.type}-${i}`} className="w-full" style={{ minHeight: '120px' }}>
+                            <div key={`${card.type}-${i}`} className="w-full" style={{ minHeight: '100px' }}>
                                 <CardSkeleton delay={i * 40} />
                             </div>
                         ))}
                     </div>
                     {showSkeleton
                         ? displayCards.map((card, i) => (
-                            <div key={`${card.type}-${i}`} className="w-full" style={{ minHeight: '120px' }}>
+                            <div key={`${card.type}-${i}`} className="w-full" style={{ minHeight: '100px' }}>
                                 <CardSkeleton delay={i * 50} />
                             </div>
                         ))
                         : displayCards.map((card, i) => (
-                            <div key={`${card.type}-${i}`} className="w-full" style={{ minHeight: card.type === 'kpi-strip' ? 'auto' : '120px' }}>
+                            <div key={`${card.type}-${i}`} className="w-full" style={{ minHeight: card.type === 'kpi-strip' ? 'auto' : '100px' }}>
                                 {renderCard(card, i)}
                             </div>
                         ))
