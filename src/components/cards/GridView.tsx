@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { SlideLayout } from '@/components/layout/SlideLayout';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { resolveFooters } from '@/utils/footerResolver';
@@ -337,6 +337,127 @@ const CardSkeleton: React.FC<{ delay?: number }> = ({ delay = 0 }) => (
     </div>
 );
 
+/* ═══ Mobile Carousel — swipeable single-card view with auto-scroll ═══ */
+
+const AUTO_SCROLL_INTERVAL = 4000;
+const AUTO_SCROLL_RESUME_DELAY = 6000;
+
+const MobileCarousel: React.FC<{
+    cards: CardDef[];
+    showSkeleton: boolean;
+    renderCard: (card: CardDef, index: number) => React.ReactNode;
+}> = ({ cards, showSkeleton, renderCard }) => {
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [activeIndex, setActiveIndex] = useState(0);
+    const autoScrollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const isPausedRef = useRef(false);
+
+    const cardCount = cards.length;
+
+    // Track current card via scroll position
+    const handleScroll = useCallback(() => {
+        const el = scrollRef.current;
+        if (!el || cardCount === 0) return;
+        const idx = Math.round(el.scrollLeft / el.clientWidth);
+        setActiveIndex(Math.min(idx, cardCount - 1));
+    }, [cardCount]);
+
+    // Scroll to a specific card
+    const scrollToCard = useCallback((idx: number) => {
+        const el = scrollRef.current;
+        if (!el) return;
+        el.scrollTo({ left: idx * el.clientWidth, behavior: 'smooth' });
+    }, []);
+
+    // Auto-scroll logic
+    const startAutoScroll = useCallback(() => {
+        if (autoScrollRef.current) clearInterval(autoScrollRef.current);
+        autoScrollRef.current = setInterval(() => {
+            if (isPausedRef.current) return;
+            const el = scrollRef.current;
+            if (!el || cardCount <= 1) return;
+            const currentIdx = Math.round(el.scrollLeft / el.clientWidth);
+            const nextIdx = (currentIdx + 1) % cardCount;
+            el.scrollTo({ left: nextIdx * el.clientWidth, behavior: 'smooth' });
+        }, AUTO_SCROLL_INTERVAL);
+    }, [cardCount]);
+
+    const pauseAutoScroll = useCallback(() => {
+        isPausedRef.current = true;
+        if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+        resumeTimerRef.current = setTimeout(() => {
+            isPausedRef.current = false;
+        }, AUTO_SCROLL_RESUME_DELAY);
+    }, []);
+
+    // Start auto-scroll on mount
+    useEffect(() => {
+        startAutoScroll();
+        return () => {
+            if (autoScrollRef.current) clearInterval(autoScrollRef.current);
+            if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+        };
+    }, [startAutoScroll]);
+
+    // Pause on touch
+    const handleTouchStart = useCallback(() => {
+        pauseAutoScroll();
+    }, [pauseAutoScroll]);
+
+    return (
+        <div className="flex flex-col flex-1 pt-4 min-h-0">
+            {/* Carousel container */}
+            <div
+                ref={scrollRef}
+                className="mobile-carousel flex-1 flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+                onScroll={handleScroll}
+                onTouchStart={handleTouchStart}
+                onMouseDown={handleTouchStart}
+            >
+                {showSkeleton
+                    ? cards.map((card, i) => (
+                        <div
+                            key={`skel-${card.type}-${i}`}
+                            className="snap-start flex-shrink-0 w-full px-3"
+                            style={{ minHeight: '200px' }}
+                        >
+                            <CardSkeleton delay={i * 50} />
+                        </div>
+                    ))
+                    : cards.map((card, i) => (
+                        <div
+                            key={`${card.type}-${i}`}
+                            className="snap-start flex-shrink-0 w-full px-3"
+                        >
+                            {renderCard(card, i)}
+                        </div>
+                    ))
+                }
+            </div>
+
+            {/* Dot indicators */}
+            {cardCount > 1 && (
+                <div className="flex items-center justify-center gap-2 py-3">
+                    {cards.map((_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => { scrollToCard(i); pauseAutoScroll(); }}
+                            className="transition-all duration-300"
+                            style={{
+                                width: i === activeIndex ? 20 : 8,
+                                height: 8,
+                                borderRadius: 4,
+                                background: i === activeIndex ? '#C8962E' : '#D0D0D0',
+                            }}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
 export const GridView: React.FC<GridViewProps> = ({
     badge,
     layout = '2x2',
@@ -430,7 +551,7 @@ export const GridView: React.FC<GridViewProps> = ({
         );
     }
 
-    /* ═══ MOBILE: Single-column scrollable stack — native feel ═══ */
+    /* ═══ MOBILE: Swipeable single-card carousel ═══ */
     if (isMobile) {
         return (
             <SlideLayout
@@ -439,31 +560,11 @@ export const GridView: React.FC<GridViewProps> = ({
                 footerRight={footerRight || ""}
                 onLogoClick={onLogoClick}
             >
-                <div className="relative flex flex-col gap-3 pb-6 px-1">
-                    {/* Nav-pending skeleton overlay */}
-                    <div
-                        className="nav-skeleton-overlay absolute inset-0 z-20 flex flex-col gap-3"
-                        style={{ pointerEvents: 'none' }}
-                    >
-                        {displayCards.map((card, i) => (
-                            <div key={`${card.type}-${i}`} className="w-full" style={{ minHeight: '100px' }}>
-                                <CardSkeleton delay={i * 40} />
-                            </div>
-                        ))}
-                    </div>
-                    {showSkeleton
-                        ? displayCards.map((card, i) => (
-                            <div key={`${card.type}-${i}`} className="w-full" style={{ minHeight: '100px' }}>
-                                <CardSkeleton delay={i * 50} />
-                            </div>
-                        ))
-                        : displayCards.map((card, i) => (
-                            <div key={`${card.type}-${i}`} className="w-full" style={{ minHeight: '100px' }}>
-                                {renderCard(card, i)}
-                            </div>
-                        ))
-                    }
-                </div>
+                <MobileCarousel
+                    cards={displayCards}
+                    showSkeleton={showSkeleton}
+                    renderCard={renderCard}
+                />
             </SlideLayout>
         );
     }

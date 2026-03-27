@@ -338,6 +338,12 @@ body.tele-nav-pending .nav-skeleton-overlay {
 .scrollbar-hide { scrollbar-width: none; }
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 
+/* ── Mobile Carousel ── */
+.mobile-carousel {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
 /* ── Scene overlay gradient (avatar shows on right) ── */
 .scene-gradient-overlay {
   background: linear-gradient(
