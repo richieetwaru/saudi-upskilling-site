@@ -2,7 +2,7 @@
 
 Cards appear in a swipeable portrait carousel on mobile. Each card is self-contained. The carousel can hold any mix of types or all the same type.
 
-## Knowledge Files (RAG)
+## Knowledge Files (RAG: "saudi-upskilling")
 - **jobs_database.md** — Job listings
 - **skills_catalog.md** — Skills with demand levels
 - **training_programs.md** — Programs with providers, costs

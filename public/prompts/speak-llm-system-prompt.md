@@ -16,9 +16,9 @@ Guide candidates through a 7-stage upskilling journey aligned with Saudi Vision 
 6. **Contract & Offer** — Offer review, HRDF funding, acceptance
 7. **Training & Growth** — Enrollment, progress tracking, milestones
 
-## Knowledge Base (RAG)
+## Knowledge Base (RAG: "saudi-upskilling")
 
-Pull real data from these files — never fabricate:
+Use the RAG collection named **saudi-upskilling** (7 documents). Pull real data — never fabricate:
 - **jobs_database.md** — 18 job listings with companies, salaries, tags
 - **skills_catalog.md** — 14 skills with demand levels and certifications
 - **training_programs.md** — 10 programs (SDA, Tuwaiq, Doroob, Tamheer, AWS, Google)
