@@ -1,68 +1,42 @@
-# Show Prompt — Saudi Upskilling Intelligence (13 Card Types)
+# Show Prompt — 13 Card Types
 
-Cards appear in a swipeable portrait carousel on mobile. Each card is self-contained. The carousel can hold any mix of types or all the same type.
+Swipeable portrait carousel on mobile. Each card is one panel. User swipes left/right.
 
-## Knowledge Files (RAG: "saudi-upskilling")
-- **jobs_database.md** — Job listings
-- **skills_catalog.md** — Skills with demand levels
-- **training_programs.md** — Programs with providers, costs
-- **interview_preparation.md** — Tips, questions by role
-- **candidate_journey.md** — 7-stage flow, triggers, sequences
-- **offers_contracts.md** — HRDF, salary ranges, contracts
+## RAG: "saudi-upskilling"
 
-Always use real data from knowledge files.
+Pull real data from: jobs_database, skills_catalog, training_programs, interview_preparation, candidate_journey, offers_contracts.
 
-## Card Types
+## Cards
 
-### Domain Cards (with action buttons)
+**`job`** — Apply button. Props: `title`, `company?`, `location?`, `salary?`, `type?`, `tags?`, `description?`, `posted?`
 
-**`job`** — Job listing. Apply button (gold).
-Props: `title`, `company?`, `location?`, `salary?`, `type?`, `tags?` (string[]), `description?`, `posted?`
+**`skill`** — Update button. Props: `name`, `level?`, `progress?` (0-100), `category?`, `demand?`, `description?`, `relatedJobs?`
 
-**`skill`** — Skill profile. Update button (teal).
-Props: `name`, `level?`, `progress?` (0-100), `category?`, `demand?`, `description?`, `relatedJobs?` (string[])
+**`training`** — Start button. Props: `title`, `provider?`, `duration?`, `format?`, `cost?`, `level?`, `description?`, `modules?`, `certificate?`
 
-**`training`** — Training program. Start button (gold).
-Props: `title`, `provider?`, `duration?`, `format?`, `cost?`, `level?`, `description?`, `modules?` (string[]), `certificate?` (boolean)
+**`interview`** — Practice button. Props: `title`, `role?`, `difficulty?`, `tips?` ({text, type?}[]), `questions?`, `description?`
 
-**`interview`** — Interview tips. Practice button (teal+gold).
-Props: `title`, `role?`, `difficulty?`, `tips?` ({text, type?}[]), `questions?` (string[]), `description?`
+**`onboarding`** — Next button. White card. Props: `title?`, `subtitle?`, `steps?` ({label, done?}[]), `currentStep?`, `message?`
 
-### Journey Cards (with action buttons, distinct visual styles)
+**`assessment`** — Start button. Gold card. Props: `title?`, `subtitle?`, `overallScore?`, `skills?` ({name, score, max?}[]), `recommendation?`
 
-**`onboarding`** — WHITE card. Welcome, profile steps. Next button.
-Props: `title?`, `subtitle?`, `steps?` ({label, done?}[]), `currentStep?`, `message?`
+**`coach`** — Continue button. Grey card. Props: `title?`, `message`, `tip?`, `encouragement?`, `nextAction?`
 
-**`assessment`** — GOLD gradient card. Skill test, score ring, bars. Start button.
-Props: `title?`, `subtitle?`, `overallScore?` (0-100), `skills?` ({name, score, max?}[]), `recommendation?`
+**`offer`** — Accept button. White card. Props: `title`, `company?`, `salary?`, `startDate?`, `status?`, `benefits?`, `hrdfFunding?`, `deadline?`
 
-**`coach`** — GREY glass card. AI coach tip, encouragement. Continue button.
-Props: `title?`, `message`, `tip?`, `encouragement?`, `nextAction?`
+**`progress`** — View button. Gold card. Props: `title?`, `subtitle?`, `overallProgress?`, `currentPhase?`, `milestones?` ({label, reached?}[]), `streak?`, `hoursLogged?`
 
-**`offer`** — WHITE card. Job offer with status. Accept button (green).
-Props: `title`, `company?`, `salary?`, `startDate?`, `status?`, `benefits?` (string[]), `hrdfFunding?` (boolean), `deadline?`
+**`schedule`** — Confirm button. Teal card. Props: `title`, `company?`, `date?`, `time?`, `format?`, `interviewer?`, `prepTips?`, `location?`
 
-**`progress`** — GOLD gradient card. Journey progress ring, milestones. View button.
-Props: `title?`, `subtitle?`, `overallProgress?` (0-100), `currentPhase?`, `milestones?` ({label, reached?}[]), `streak?`, `hoursLogged?`
+**`data-table`** — Props: `title?`, `headerStats?`, `columns?`, `rows?` ({cells}[]), `footer?`
 
-**`schedule`** — TEAL card. Interview appointment. Confirm button.
-Props: `title`, `company?`, `date?`, `time?`, `format?`, `interviewer?`, `prepTips?` (string[]), `location?`
+**`tile-grid`** — Props: `title?`, `subtitle?`, `tiles?` ({label, value?, icon?}[]), `footer?`
 
-### Data Cards (no buttons)
-
-**`data-table`** — Header stats + table.
-Props: `title?`, `headerStats?` ({label, value, change?}[]), `columns?` (string[]), `rows?` ({cells: string[]}[]), `footer?`
-
-**`tile-grid`** — 2-column mini tiles.
-Props: `title?`, `subtitle?`, `tiles?` ({label, value?, icon?}[] up to 6), `footer?`
-
-**`spotlight`** — Avatar + area chart.
-Props: `title?`, `subtitle?`, `imageUrl?`, `tag?`, `points?` ({label, value}[]), `caption?`
+**`spotlight`** — Props: `title?`, `subtitle?`, `imageUrl?`, `tag?`, `points?` ({label, value}[]), `caption?`
 
 ## Rules
 
-- Do NOT set `badge`, `footerLeft`, or `footerRight`
-- Pull real data from RAG knowledge files
-- Use pre-select sequences for guided flows (see candidate_journey.md)
-- Buttons send actions to the voice agent via onAction
-- Each card must work as a standalone swipeable panel
+- No `badge`, `footerLeft`, `footerRight`
+- Real data from RAG only
+- Keep content concise — large text on mobile
+- Multiple cards = swipeable carousel

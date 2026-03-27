@@ -65,8 +65,7 @@ function getRowWeight(rowCards: CardDef[]): number {
 // Module-level dedup set for renderCard (prevents repeated informTele for same unknown type within a single render batch)
 let _reportedUnknownTypes = new Set<string>();
 
-/** Clamp weights so no content row gets more than 2× the height of the smallest content row.
- *  Excludes compact rows (weight 1 = kpi-strip) since they use flex: 0 0 auto. */
+/** Clamp weights so no content row gets more than 2× the height of the smallest row. */
 function clampRowWeights(weights: number[]): number[] {
     if (weights.length <= 1) return weights;
     const contentWeights = weights.filter(w => w > 1);
