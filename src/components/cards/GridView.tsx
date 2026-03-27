@@ -406,15 +406,15 @@ const MobileCarousel: React.FC<{
     }, [pauseAutoScroll]);
 
     return (
-        <div className="absolute inset-0 flex flex-col">
-            {/* Spacer — fills top 55% so avatar face stays visible */}
-            <div style={{ flex: '0 0 55%' }} />
+        <div className="flex flex-col h-full w-full">
+            {/* Spacer — pushes cards to bottom so avatar face stays visible */}
+            <div className="flex-1" />
 
-            {/* Carousel — fixed in the bottom 45%, landscape card shape */}
+            {/* Carousel — landscape cards at bottom */}
             <div
                 ref={scrollRef}
-                className="mobile-carousel flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
-                style={{ height: '30vh', flexShrink: 0 }}
+                className="mobile-carousel flex overflow-x-auto snap-x snap-mandatory scrollbar-hide shrink-0"
+                style={{ height: '28vh' }}
                 onScroll={handleScroll}
                 onTouchStart={handleTouchStart}
                 onMouseDown={handleTouchStart}
@@ -423,8 +423,8 @@ const MobileCarousel: React.FC<{
                     ? cards.map((card, i) => (
                         <div
                             key={`skel-${card.type}-${i}`}
-                            className="snap-start flex-shrink-0 px-4"
-                            style={{ width: '100%', height: '30vh' }}
+                            className="snap-start shrink-0 px-4"
+                            style={{ width: '100vw', height: '28vh' }}
                         >
                             <div className="card-glass h-full rounded-xl skeleton-shimmer-bg" />
                         </div>
@@ -432,8 +432,8 @@ const MobileCarousel: React.FC<{
                     : cards.map((card, i) => (
                         <div
                             key={`${card.type}-${i}`}
-                            className="snap-start flex-shrink-0 px-4"
-                            style={{ width: '100%', height: '30vh' }}
+                            className="snap-start shrink-0 px-4"
+                            style={{ width: '100vw', height: '28vh' }}
                         >
                             <div className="h-full overflow-auto">
                                 {renderCard(card, i)}
@@ -443,7 +443,7 @@ const MobileCarousel: React.FC<{
                 }
             </div>
 
-            {/* Dot indicators — pinned right below carousel */}
+            {/* Dot indicators */}
             {cardCount > 1 && (
                 <div className="flex items-center justify-center gap-2 py-2 shrink-0">
                     {cards.map((_, i) => (

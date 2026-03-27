@@ -244,3 +244,65 @@ export const stopThinkingSound = (): void => {
     thinkingSoundPlayCount = 0;
   }
 };
+
+// ============================================================
+// AVATAR REVEAL SOUND
+// Crystalline shimmer — ascending arpeggio with harmonics
+// ============================================================
+
+export const playAvatarRevealSound = (volumeMultiplier: number = 1) => {
+  try {
+    const ctx = getUIAudioContext();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') ctx.resume();
+
+    const now = ctx.currentTime;
+    const vol = Math.max(0, Math.min(1, volumeMultiplier));
+
+    // Ascending arpeggio: C6 → E6 → G6 → C7
+    const notes = [1046.5, 1318.5, 1568.0, 2093.0];
+    const stagger = 0.12;
+
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now + i * stagger);
+      gain.gain.setValueAtTime(0, now + i * stagger);
+      gain.gain.linearRampToValueAtTime(0.06 * vol * (1 - i * 0.15), now + i * stagger + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * stagger + 0.8);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + i * stagger);
+      osc.stop(now + i * stagger + 0.8);
+    });
+
+    // Shimmer layer
+    const shimmerOsc = ctx.createOscillator();
+    const shimmerGain = ctx.createGain();
+    shimmerOsc.type = 'triangle';
+    shimmerOsc.frequency.setValueAtTime(4186, now + 0.3);
+    shimmerGain.gain.setValueAtTime(0, now + 0.3);
+    shimmerGain.gain.linearRampToValueAtTime(0.02 * vol, now + 0.35);
+    shimmerGain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+    shimmerOsc.connect(shimmerGain);
+    shimmerGain.connect(ctx.destination);
+    shimmerOsc.start(now + 0.3);
+    shimmerOsc.stop(now + 1.2);
+
+    // Sub warmth
+    const subOsc = ctx.createOscillator();
+    const subGain = ctx.createGain();
+    subOsc.type = 'sine';
+    subOsc.frequency.setValueAtTime(523.25, now);
+    subGain.gain.setValueAtTime(0, now);
+    subGain.gain.linearRampToValueAtTime(0.04 * vol, now + 0.05);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 1.0);
+    subOsc.connect(subGain);
+    subGain.connect(ctx.destination);
+    subOsc.start(now);
+    subOsc.stop(now + 1.0);
+  } catch {
+    // Sound playback failed silently
+  }
+};

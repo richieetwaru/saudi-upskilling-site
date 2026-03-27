@@ -89,7 +89,7 @@ export function SceneManager() {
       )}
 
       {/* Main content */}
-      <main className="relative z-10 flex-1 px-0 md:px-6 pb-0 overflow-hidden min-h-0">
+      <main className="relative z-10 flex-1 px-0 md:px-6 pb-0 min-h-0">
         {skeletonLayout ? (
           <MobileSkeleton />
         ) : customLayout && currentScene ? (
@@ -140,14 +140,12 @@ export function SceneManager() {
 /** Mobile skeleton — matches carousel position (bottom of viewport, landscape) */
 function MobileSkeleton() {
   return (
-    <div className="absolute inset-0 flex flex-col">
-      <div style={{ flex: '0 0 55%' }} />
-      <div className="px-4" style={{ height: '30vh', flexShrink: 0 }}>
-        <div
-          className="card-glass h-full rounded-xl skeleton-shimmer-bg animate-skeleton-bounce"
-        />
+    <div className="flex flex-col h-full w-full">
+      <div className="flex-1" />
+      <div className="px-4 shrink-0" style={{ height: '28vh' }}>
+        <div className="card-glass h-full rounded-xl skeleton-shimmer-bg animate-skeleton-bounce" />
       </div>
-      <div className="flex items-center justify-center gap-2 py-2">
+      <div className="flex items-center justify-center gap-2 py-2 shrink-0">
         {[0, 1, 2].map((i) => (
           <div
             key={i}

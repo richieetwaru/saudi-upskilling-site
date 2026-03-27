@@ -168,13 +168,14 @@ body {
 }
 .chat-messages-container::-webkit-scrollbar { display: none; }
 
-/* ── Hero Pulse Animation (connecting/thinking) ── */
+/* ── Hero Pulse Animation (connecting/thinking) — gold glow ── */
 @keyframes hero-pulse {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.7; }
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.4; }
 }
 .hero-pulse-overlay {
   animation: hero-pulse 2s ease-in-out infinite;
+  background: radial-gradient(ellipse at 60% 40%, rgba(200, 150, 46, 0.3) 0%, transparent 70%) !important;
 }
 
 /* ── Button Styles ── */
@@ -184,22 +185,22 @@ body {
   background: #C8962E;
   color: #FFFFFF;
   font-family: var(--font-data);
-  font-size: 0.875rem; font-weight: 700;
-  letter-spacing: 0.05em; text-transform: uppercase;
+  font-size: 0.75rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
   transition: all 0.3s ease;
   cursor: pointer;
-  border-radius: 0.375rem;
+  border-radius: 9999px;
 }
 .btn-action:hover { transform: translateY(-1px); background: #B8860B; }
 
 .start-button {
   background: #C8962E; color: #FFFFFF;
   font-family: var(--font-data);
-  font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
-  padding: 0.75rem 1.5rem;
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+  padding: 0.75rem 2rem;
   border: none; cursor: pointer;
   transition: all 0.3s ease;
-  border-radius: 0.375rem;
+  border-radius: 9999px;
 }
 .start-button:hover { transform: translateY(-1px); background: #B8860B; }
 
@@ -343,6 +344,14 @@ body.tele-nav-pending .nav-skeleton-overlay {
 .mobile-carousel {
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
+}
+
+/* ── Avatar reveal sparkle particles ── */
+@keyframes sparkle-float {
+  0% { opacity: 0; transform: scale(0) translateY(0); }
+  15% { opacity: 1; transform: scale(1.2) translateY(-5px); }
+  50% { opacity: 0.8; transform: scale(0.8) translateY(-20px); }
+  100% { opacity: 0; transform: scale(0) translateY(-40px); }
 }
 
 /* ── Scene overlay gradient (avatar shows on right) ── */
