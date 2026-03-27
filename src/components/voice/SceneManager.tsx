@@ -40,37 +40,20 @@ export function SceneManager() {
   return (
     <div id="scene-root" className="relative flex flex-col w-full h-full min-h-0 text-white">
 
-      {/* Header — badge + optional back button */}
-      <header className="relative z-10 flex items-center justify-between px-4 md:px-6 py-3 shrink-0">
-        <div className="flex items-center gap-3">
-          {hasHistory && (
-            <button
-              onClick={navigateSceneBack}
-              className="flex items-center gap-1 text-sm text-white/60 hover:text-white transition-colors"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="m15 18-6-6 6-6" />
-              </svg>
-              Back
-            </button>
-          )}
-        </div>
-        {currentScene?.badge && (
-          <span className="text-xs font-medium text-white/50 tracking-wider uppercase font-data">
-            {currentScene.badge}
-          </span>
-        )}
-      </header>
+      {/* Header — optional back button only (no badge) */}
+      {hasHistory && (
+        <header className="relative z-10 flex items-center px-4 md:px-6 py-3 shrink-0">
+          <button
+            onClick={navigateSceneBack}
+            className="flex items-center gap-1 text-sm text-white/60 hover:text-white transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+            Back
+          </button>
+        </header>
+      )}
 
       {/* Title area */}
       {(currentScene?.title || currentScene?.subtitle) && (
@@ -140,7 +123,7 @@ export function SceneManager() {
 /** Mobile skeleton — matches carousel position (fixed to bottom, portrait) */
 function MobileSkeleton() {
   return (
-    <div style={{ position: 'fixed', bottom: '40px', left: 0, right: 0, zIndex: 10 }}>
+    <div style={{ position: 'fixed', bottom: '72px', left: 0, right: 0, zIndex: 10 }}>
       <div className="px-4" style={{ height: '58vh' }}>
         <div className="card-glass h-full rounded-xl skeleton-shimmer-bg animate-skeleton-bounce" />
       </div>

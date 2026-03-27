@@ -411,7 +411,7 @@ const MobileCarousel: React.FC<{
     }, [pauseAutoScroll]);
 
     return (
-        <div style={{ position: 'fixed', bottom: '40px', left: 0, right: 0, zIndex: 10 }}>
+        <div style={{ position: 'fixed', bottom: '72px', left: 0, right: 0, zIndex: 10 }}>
             {/* Carousel — portrait cards anchored to bottom of viewport */}
             <div
                 ref={scrollRef}

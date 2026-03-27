@@ -6,9 +6,7 @@ Use the `show_component` tool to display visual cards that help candidates under
 
 | Type | Purpose | Example Use |
 |------|---------|-------------|
-| `kpi-strip` | Key metrics in a horizontal strip | Total programs, completion rate, certifications earned |
 | `bar-chart` | Compare values across categories | Skills demand by sector, salary ranges by certification |
-| `stat` | Single highlighted statistic | "87% employment rate after completion" |
 | `callout` | Important callout or highlight | "New: Saudi Digital Academy accepting applications" |
 | `info-card` | Rich information card | Program details, institution overview |
 | `bullet-list` | Ordered or unordered list | Program requirements, career pathway steps |
@@ -16,12 +14,17 @@ Use the `show_component` tool to display visual cards that help candidates under
 | `image-card` | Image with caption | Institution logos, program banners |
 | `table` | Tabular data | Program comparison, schedule overview |
 
+## Important Rules
+
+- Do NOT set a `badge` field on scenes — the UI does not display badges
+- Do NOT use `kpi-strip` or `stat` card types — they are not available
+- On mobile, cards are displayed one at a time in a swipeable portrait carousel
+- Keep each card self-contained — it must make sense on its own
+
 ## Layout Codes
 
 - Simple grids: `2x2`, `3x2`, `1x3`
 - Hybrid rows: `1-2` (1 card top, 2 bottom), `1-2-3`, `2-3`
-- Mosaic: `m:hero-sidebar`, `m:dashboard`, `m:cinema`
-- Vertical columns: `v:2-2`, `v:1-3`
 
 ## Example Scenes
 
@@ -29,27 +32,17 @@ Use the `show_component` tool to display visual cards that help candidates under
 ```
 layout: "1-2-3"
 cards:
-  - type: kpi-strip, items: [{label: "Active Programs", value: "340+"}, {label: "Sectors", value: "6"}, {label: "Avg Completion", value: "78%"}]
-  - type: stat, label: "Technology", value: "Most In-Demand Sector", subtitle: "42% of new programs"
-  - type: stat, label: "Healthcare", value: "Fastest Growing", subtitle: "31% year-over-year"
-  - type: bar-chart, title: "Skills Demand by Sector", bars: [{label: "Tech", value: 42}, {label: "Health", value: 31}, ...]
+  - type: bar-chart, title: "Skills Demand by Sector", bars: [{label: "Tech", value: 42}, {label: "Health", value: 31}, {label: "Finance", value: 15}]
   - type: checklist, title: "Your Next Steps", items: [{text: "Complete skills assessment"}, {text: "Choose a program"}, {text: "Apply for funding"}]
   - type: info-card, title: "Saudi Digital Academy", body: "Free tech training programs for Saudi nationals"
-```
-
-### Program Comparison
-```
-layout: "1-2"
-cards:
-  - type: table, title: "Program Comparison", columns: ["Program", "Duration", "Cost", "Certificate"], rows: [...]
-  - type: bullet-list, title: "Requirements", items: [{text: "Saudi national"}, {text: "Age 18-35"}, ...]
-  - type: callout, label: "Tip", body: "HRDF covers up to 75% of training costs for eligible candidates"
+  - type: callout, label: "New", body: "Digital Academy now accepting applications for tech courses"
+  - type: bullet-list, title: "Top Certifications", items: [{text: "AWS Cloud Practitioner"}, {text: "Google Data Analytics"}, {text: "PMP Project Management"}]
+  - type: table, title: "Program Comparison", columns: ["Program", "Duration", "Cost"], rows: [["Tuwaiq Academy", "6 months", "Free"], ["Udacity Nanodegree", "4 months", "Subsidized"]]
 ```
 
 ## Guidelines
 
 - Always show data relevant to Saudi Vision 2030 upskilling
-- Use `kpi-strip` at the top for key metrics
-- Pair `bar-chart` with `stat` cards for context
 - Use `checklist` for actionable next steps
 - Keep card content concise — this is a visual aid, not a document
+- Each card should work as a standalone swipeable panel on mobile
