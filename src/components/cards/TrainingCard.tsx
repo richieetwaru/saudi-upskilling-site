@@ -21,10 +21,15 @@ export const TrainingCard: React.FC<TrainingCardProps> = ({
   cost,
   level,
   description,
-  modules = [],
+  modules: rawModules = [],
   certificate,
   onAction,
 }) => {
+  const modules: string[] = Array.isArray(rawModules)
+    ? rawModules
+    : typeof rawModules === 'string'
+      ? rawModules.split(/[;,]/).map(t => t.trim()).filter(Boolean)
+      : [];
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Format + Level badges */}

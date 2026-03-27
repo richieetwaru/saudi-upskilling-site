@@ -18,11 +18,17 @@ export const JobCard: React.FC<JobCardProps> = ({
   location,
   salary,
   type,
-  tags = [],
+  tags: rawTags = [],
   description,
   posted,
   onAction,
 }) => {
+  // Handle tags as array, semicolon-separated string, or comma-separated string
+  const tags: string[] = Array.isArray(rawTags)
+    ? rawTags
+    : typeof rawTags === 'string'
+      ? rawTags.split(/[;,]/).map(t => t.trim()).filter(Boolean)
+      : [];
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Type badge */}

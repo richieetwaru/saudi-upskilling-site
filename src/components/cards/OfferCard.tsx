@@ -18,11 +18,16 @@ export const OfferCard: React.FC<OfferCardProps> = ({
   salary,
   startDate,
   status = 'Pending',
-  benefits = [],
+  benefits: rawBenefits = [],
   hrdfFunding,
   deadline,
   onAction,
 }) => {
+  const benefits: string[] = Array.isArray(rawBenefits)
+    ? rawBenefits
+    : typeof rawBenefits === 'string'
+      ? rawBenefits.split(/[;,]/).map(t => t.trim()).filter(Boolean)
+      : [];
   const statusColor = status.toLowerCase() === 'approved' ? '#22c55e' :
     status.toLowerCase() === 'pending' ? '#C8962E' : '#5A6B75';
 

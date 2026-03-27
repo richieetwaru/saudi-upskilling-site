@@ -18,9 +18,14 @@ export const SkillCard: React.FC<SkillCardProps> = ({
   category,
   demand,
   description,
-  relatedJobs = [],
+  relatedJobs: rawRelated = [],
   onAction,
 }) => {
+  const relatedJobs: string[] = Array.isArray(rawRelated)
+    ? rawRelated
+    : typeof rawRelated === 'string'
+      ? rawRelated.split(/[;,]/).map(t => t.trim()).filter(Boolean)
+      : [];
   const clampedProgress = Math.min(100, Math.max(0, progress));
 
   return (

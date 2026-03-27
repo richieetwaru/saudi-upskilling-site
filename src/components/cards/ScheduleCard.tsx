@@ -19,10 +19,15 @@ export const ScheduleCard: React.FC<ScheduleCardProps> = ({
   time,
   format,
   interviewer,
-  prepTips = [],
+  prepTips: rawTips = [],
   location,
   onAction,
 }) => {
+  const prepTips: string[] = Array.isArray(rawTips)
+    ? rawTips
+    : typeof rawTips === 'string'
+      ? rawTips.split(/[;,]/).map(t => t.trim()).filter(Boolean)
+      : [];
   return (
     <div className="flex flex-col h-full overflow-hidden rounded-xl" style={{ background: 'rgba(26,58,75,0.9)', border: '1px solid rgba(255,255,255,0.12)' }}>
       <div className="p-5 flex flex-col h-full">
