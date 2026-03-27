@@ -360,6 +360,7 @@ body.tele-nav-pending .nav-skeleton-overlay {
   .card-glass p, .card-glass .font-voice { font-size: 1.25rem !important; line-height: 1.5 !important; }
   .card-glass .font-data { font-size: 1.125rem !important; line-height: 1.4 !important; }
   .card-glass span { font-size: max(1rem, inherit) !important; }
+  .card-glass { overflow-y: auto !important; }
 }
 
 /* ── Avatar reveal sparkle particles ── */
