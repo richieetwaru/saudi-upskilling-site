@@ -325,6 +325,137 @@ function parseFlatCard(type: string, fields: string[], span?: 'full'): CardDef |
             const [imageUrl, caption, subtitle] = fields;
             return Object.assign(card, { imageUrl: n(imageUrl), caption: n(caption), subtitle: n(subtitle) });
         }
+        // ── New card types ──
+        case 'job': {
+            const [title, company, location, salary, jobType, tagsStr, description, posted] = fields;
+            return Object.assign(card, {
+                title: n(title) ?? '', company: n(company), location: n(location),
+                salary: n(salary), tags: n(tagsStr)?.split(',').map(t => t.trim()) ?? [],
+                description: n(description), posted: n(posted),
+            });
+        }
+        case 'skill': {
+            const [name, level, progressStr, category, demand, description, relatedStr] = fields;
+            return Object.assign(card, {
+                type: 'skill', name: n(name) ?? '', level: n(level),
+                progress: parseInt(n(progressStr) ?? '0', 10) || 0,
+                category: n(category), demand: n(demand), description: n(description),
+                relatedJobs: n(relatedStr)?.split(',').map(t => t.trim()) ?? [],
+            });
+        }
+        case 'training': {
+            const [title, provider, duration, format, cost, level, description, modulesStr, certStr] = fields;
+            return Object.assign(card, {
+                title: n(title) ?? '', provider: n(provider), duration: n(duration),
+                format: n(format), cost: n(cost), level: n(level), description: n(description),
+                modules: n(modulesStr)?.split(',').map(t => t.trim()) ?? [],
+                certificate: n(certStr)?.toLowerCase() === 'true' || n(certStr)?.toLowerCase() === 'yes',
+            });
+        }
+        case 'interview': {
+            const [title, role, difficulty, description, ...rest] = fields;
+            // Tips/questions come as remaining pipe fields: "tip text" or "Q: question text"
+            const tips = rest.filter(r => n(r)).map(r => {
+                const text = n(r) ?? '';
+                const isQ = text.startsWith('Q:') || text.startsWith('Q ');
+                return { text: isQ ? text.slice(2).trim() : text, type: isQ ? 'question' : 'tip' };
+            });
+            return Object.assign(card, {
+                title: n(title) ?? '', role: n(role), difficulty: n(difficulty),
+                description: n(description), tips: tips.length > 0 ? tips : undefined,
+            });
+        }
+        case 'onboarding': {
+            const [title, subtitle, message, ...stepFields] = fields;
+            const steps = stepFields.filter(s => n(s)).map(s => {
+                const text = n(s) ?? '';
+                const done = text.startsWith('[x]') || text.startsWith('[X]');
+                return { label: done ? text.slice(3).trim() : text, done };
+            });
+            return Object.assign(card, {
+                title: n(title) ?? 'Welcome', subtitle: n(subtitle), message: n(message),
+                steps: steps.length > 0 ? steps : undefined,
+            });
+        }
+        case 'assessment': {
+            const [title, subtitle, scoreStr, recommendation, ...skillFields] = fields;
+            const skills = skillFields.filter(s => n(s)).map(s => {
+                const parts = (n(s) ?? '').split(':');
+                return { name: parts[0]?.trim() ?? '', score: parseInt(parts[1]?.trim() ?? '0', 10) || 0, max: 100 };
+            });
+            return Object.assign(card, {
+                title: n(title) ?? 'Skill Assessment', subtitle: n(subtitle),
+                overallScore: parseInt(n(scoreStr) ?? '0', 10) || 0,
+                recommendation: n(recommendation), skills: skills.length > 0 ? skills : undefined,
+            });
+        }
+        case 'coach': {
+            const [title, message, tip, encouragement, nextAction] = fields;
+            return Object.assign(card, {
+                title: n(title), message: n(message) ?? '', tip: n(tip),
+                encouragement: n(encouragement), nextAction: n(nextAction),
+            });
+        }
+        case 'offer': {
+            const [title, company, salary, startDate, status, hrdfStr, deadline, ...benefitFields] = fields;
+            return Object.assign(card, {
+                title: n(title) ?? '', company: n(company), salary: n(salary),
+                startDate: n(startDate), status: n(status) ?? 'Pending',
+                hrdfFunding: n(hrdfStr)?.toLowerCase() === 'true' || n(hrdfStr)?.toLowerCase() === 'yes',
+                deadline: n(deadline),
+                benefits: benefitFields.filter(b => n(b)).map(b => n(b) ?? ''),
+            });
+        }
+        case 'progress': {
+            const [title, subtitle, progressStr, currentPhase, streakStr, hoursStr, ...milestoneFields] = fields;
+            const milestones = milestoneFields.filter(m => n(m)).map(m => {
+                const text = n(m) ?? '';
+                const reached = text.startsWith('[x]') || text.startsWith('[X]');
+                return { label: reached ? text.slice(3).trim() : text, reached };
+            });
+            return Object.assign(card, {
+                title: n(title), subtitle: n(subtitle),
+                overallProgress: parseInt(n(progressStr) ?? '0', 10) || 0,
+                currentPhase: n(currentPhase),
+                streak: parseInt(n(streakStr) ?? '0', 10) || 0,
+                hoursLogged: parseInt(n(hoursStr) ?? '0', 10) || 0,
+                milestones: milestones.length > 0 ? milestones : undefined,
+            });
+        }
+        case 'schedule': {
+            const [title, company, date, time, format, interviewer, location, ...tipFields] = fields;
+            return Object.assign(card, {
+                title: n(title) ?? '', company: n(company), date: n(date), time: n(time),
+                format: n(format), interviewer: n(interviewer), location: n(location),
+                prepTips: tipFields.filter(t => n(t)).map(t => n(t) ?? ''),
+            });
+        }
+        case 'data-table': {
+            const [title, footer, ...rest] = fields;
+            return Object.assign(card, { title: n(title), footer: n(footer) });
+        }
+        case 'tile-grid': {
+            const [title, subtitle, footer, ...tileFields] = fields;
+            const tiles = tileFields.filter(t => n(t)).map(t => {
+                const parts = (n(t) ?? '').split(':');
+                return { label: parts[0]?.trim() ?? '', value: parts[1]?.trim(), icon: parts[2]?.trim() };
+            });
+            return Object.assign(card, {
+                title: n(title), subtitle: n(subtitle), footer: n(footer),
+                tiles: tiles.length > 0 ? tiles : undefined,
+            });
+        }
+        case 'spotlight': {
+            const [title, subtitle, tag, caption, ...pointFields] = fields;
+            const points = pointFields.filter(p => n(p)).map(p => {
+                const parts = (n(p) ?? '').split(':');
+                return { label: parts[0]?.trim() ?? '', value: parseInt(parts[1]?.trim() ?? '0', 10) || 0 };
+            });
+            return Object.assign(card, {
+                title: n(title), subtitle: n(subtitle), tag: n(tag), caption: n(caption),
+                points: points.length > 0 ? points : undefined,
+            });
+        }
         default:
             return null;
     }
