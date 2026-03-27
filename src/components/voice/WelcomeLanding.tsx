@@ -22,14 +22,14 @@ export function WelcomeLanding() {
             className="animate-slide-in-left"
             style={{ animationDelay: '0.1s' }}
           >
-            <span className="inline-block rounded-full bg-[#1A3A4B]/10 px-4 py-1.5 text-xs font-data tracking-[0.15em] text-[#1A3A4B] uppercase border border-[#1A3A4B]/20">
+            <span className="inline-block rounded-full bg-white/10 px-4 py-1.5 text-xs font-data tracking-[0.15em] text-white/80 uppercase backdrop-blur-sm border border-white/20">
               SAUDI UPSKILLING INTELLIGENCE
             </span>
           </div>
 
           {/* Title */}
           <h1
-            className="animate-slide-in-left font-hero text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.95] tracking-tight text-[#1A3A4B]"
+            className="animate-slide-in-left font-hero text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.95] tracking-tight text-white"
             style={{ animationDelay: '0.25s' }}
           >
             Achieve Your{' '}
@@ -40,7 +40,7 @@ export function WelcomeLanding() {
 
           {/* Subtitle */}
           <p
-            className="animate-slide-in-left text-base sm:text-lg md:text-xl text-[#5A6B75] max-w-lg mx-auto lg:mx-0"
+            className="animate-slide-in-left text-base sm:text-lg md:text-xl text-white/60 max-w-lg mx-auto lg:mx-0"
             style={{ animationDelay: '0.4s' }}
           >
             AI-powered guidance to help candidates navigate upskilling opportunities across Saudi Arabia
@@ -64,7 +64,7 @@ export function WelcomeLanding() {
       </main>
 
       {/* Footer */}
-      <footer className="flex items-center justify-between text-[10px] sm:text-xs font-data text-[#5A6B75]/60 uppercase tracking-widest">
+      <footer className="flex items-center justify-between text-[10px] sm:text-xs font-data text-white/40 uppercase tracking-widest">
         <span>BUILT BY THOUGHTWORKS</span>
         <span>POWERED BY MOBEUS TELEGLASS</span>
       </footer>

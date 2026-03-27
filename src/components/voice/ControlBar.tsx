@@ -19,8 +19,8 @@ export function ControlBar() {
   const isConnecting = sessionState === 'connecting';
   const isIdle = sessionState === 'idle' || sessionState === 'error';
 
-  const iconColor = 'text-[#1A3A4B]/70 hover:text-[#1A3A4B]';
-  const iconBg = 'bg-[#1A3A4B]/5 hover:bg-[#1A3A4B]/10';
+  const iconColor = 'text-white/70 hover:text-white';
+  const iconBg = 'bg-white/10 hover:bg-white/20';
 
   const handleConnect = () => {
     playGlassSound();
@@ -102,10 +102,10 @@ export function ControlBar() {
       <div
         className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 transition-all cursor-pointer ${
           isConnecting
-            ? 'border-[#1A3A4B]/40 bg-[#1A3A4B]/5 animate-pulse'
+            ? 'border-white/40 bg-white/5 animate-pulse'
             : isConnected
-              ? 'border-[#1A3A4B]/60 shadow-lg'
-              : 'border-[#1A3A4B]/20 shadow-lg'
+              ? 'border-white/60 shadow-lg'
+              : 'border-white/30 shadow-lg'
         }`}
         onClick={isIdle ? handleConnect : undefined}
       >
