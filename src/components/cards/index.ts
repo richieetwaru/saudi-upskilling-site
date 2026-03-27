@@ -1,7 +1,5 @@
-// Core Data Cards
-export { KPIStrip } from './KPIStrip';
+// Core
 export { BarChart } from './BarChart';
-export { StatCard } from './StatCard';
 export { CalloutCard } from './CalloutCard';
 
 // Content

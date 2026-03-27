@@ -5,13 +5,13 @@ import { resolveFooters } from '@/utils/footerResolver';
 import { informTele } from '@/utils/informTele';
 import type { CardDef } from '@/types/cards';
 import {
-    KPIStrip, BarChart, StatCard, CalloutCard,
+    BarChart, CalloutCard,
     InfoCard, BulletListCard, ImageCard, ChecklistCard,
     TableCard,
 } from '@/components/cards';
 
 /* ═══════════════════════════════════════════════════════════
-   GridView — Composable Grid Template (9 Card Types)
+   GridView — Composable Grid Template (7 Card Types)
 
    Accepts a layout code and an array of card definitions.
    Used by the voice agent to display upskilling data.
@@ -30,9 +30,7 @@ interface GridViewProps {
 /* ═══ Card Renderer ═══ */
 
 const CARD_MAP: Record<string, React.FC<any>> = {
-    'kpi-strip': KPIStrip,
     'bar-chart': BarChart,
-    'stat': StatCard,
     'callout': CalloutCard,
     'info-card': InfoCard,
     'bullet-list': BulletListCard,
@@ -46,8 +44,7 @@ const CARD_MAP: Record<string, React.FC<any>> = {
 /* ═══ Card Size Tiers — flex-grow weights for row height distribution ═══ */
 
 const CARD_SIZE: Record<string, number> = {
-    'kpi-strip': 1,
-    'stat': 2, 'callout': 2,
+    'callout': 2,
     'image-card': 2, 'info-card': 2,
     'bullet-list': 2, 'checklist': 2,
     'bar-chart': 3, 'table': 3,
@@ -88,7 +85,7 @@ function renderCard(card: CardDef, index: number) {
     const effectiveProps = { ...(nestedProps || {}), ...flatProps };
     const content = <Component key={index} {...effectiveProps} />;
     // Card types that always render without the glass box wrapper
-    const BORDERLESS = new Set(['kpi-strip']);
+    const BORDERLESS = new Set<string>();
     // These card types get the glass border + bg but NO internal padding (flush fill)
     const FLUSH_ROUNDED = new Set(['image-card', 'alert']);
     if (BORDERLESS.has(card.type) || card.borderless) return content;
@@ -401,7 +398,7 @@ export const GridView: React.FC<GridViewProps> = ({
             _reportedUnknownTypes = new Set<string>(unknownTypes);
             informTele(
                 `[UNKNOWN CARD TYPE] ${unknownTypes.map(t => `"${t}"`).join(', ')} — rendered as blank slot(s). ` +
-                `Check spelling. Valid: stat, callout, kpi-strip, bar-chart, ` +
+                `Check spelling. Valid: callout, bar-chart, ` +
                 `bullet-list, checklist, info-card, image-card, table.`
             );
         }
@@ -461,7 +458,7 @@ export const GridView: React.FC<GridViewProps> = ({
                             </div>
                         ))
                         : displayCards.map((card, i) => (
-                            <div key={`${card.type}-${i}`} className="w-full" style={{ minHeight: card.type === 'kpi-strip' ? 'auto' : '100px' }}>
+                            <div key={`${card.type}-${i}`} className="w-full" style={{ minHeight: '100px' }}>
                                 {renderCard(card, i)}
                             </div>
                         ))
@@ -571,16 +568,13 @@ export const GridView: React.FC<GridViewProps> = ({
 
                             const rowWeight = clampedWeights[rowIndex];
 
-                            const isCompactRow = rowCards.every(c => c.type === 'kpi-strip');
-                            const isSemiCompact = !isCompactRow && rowCards.every(c =>
-                                (c.type === 'callout' || c.type === 'stat') &&
+                            const isSemiCompact = rowCards.every(c =>
+                                c.type === 'callout' &&
                                 !c.props?.body && !c.props?.subtitle
                             );
-                            const flexStyle = isCompactRow
-                                ? '0 0 auto'
-                                : isSemiCompact
-                                    ? '1 1 0%'
-                                    : `${rowWeight} 1 0%`;
+                            const flexStyle = isSemiCompact
+                                ? '1 1 0%'
+                                : `${rowWeight} 1 0%`;
 
                             return (
                                 <div key={rowIndex} className={`grid ${colCls} gap-3 md:gap-4 min-h-0`}
