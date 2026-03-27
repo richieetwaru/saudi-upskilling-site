@@ -6,7 +6,7 @@ import { playUISound, playGlassSound } from '@/utils/soundGenerator';
 
 /**
  * ControlBar — Bottom-centered horizontal pill.
- * The single control surface: connect, listening indicator, disconnect.
+ * Idle: higher up (below welcome text). Connected: drops to bottom.
  */
 export function ControlBar() {
   const sessionState = useVoiceSessionStore((s) => s.sessionState);
@@ -27,13 +27,16 @@ export function ControlBar() {
     disconnect();
   };
 
+  // Idle: higher position. Connected: drops to bottom for card space.
+  const bottomOffset = isIdle ? 'bottom-[30vh]' : 'bottom-6';
+
   return (
-    <div className="fixed bottom-6 left-0 right-0 z-[60] flex justify-center pointer-events-none">
+    <div className={`fixed ${bottomOffset} left-0 right-0 z-[60] flex justify-center pointer-events-none transition-all duration-700 ease-out`}>
       {/* Idle: Connect pill */}
       {isIdle && (
         <button
           onClick={handleConnect}
-          className="start-button inline-flex items-center gap-3 pointer-events-auto shadow-lg shadow-black/20"
+          className="start-button inline-flex items-center gap-3 pointer-events-auto shadow-lg shadow-black/30"
         >
           START CONVERSATION
           <ArrowRight className="w-4 h-4" />
@@ -53,8 +56,7 @@ export function ControlBar() {
 
       {/* Connected: listening pill with disconnect */}
       {isConnected && (
-        <div className="inline-flex items-center gap-0 pointer-events-auto rounded-full shadow-lg shadow-black/20 overflow-hidden">
-          {/* Listening indicator */}
+        <div className="inline-flex items-center gap-0 pointer-events-auto rounded-full shadow-lg shadow-black/30 overflow-hidden">
           <div className="inline-flex items-center gap-2 bg-white/8 backdrop-blur-sm border border-white/10 px-5 py-3 rounded-l-full">
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C8962E] opacity-75" />
@@ -64,8 +66,6 @@ export function ControlBar() {
               Listening
             </span>
           </div>
-
-          {/* Disconnect button */}
           <button
             onClick={handleDisconnect}
             className="bg-red-600/80 hover:bg-red-500 text-white px-4 py-3 rounded-r-full transition-colors duration-200 border border-red-500/30 border-l-0"

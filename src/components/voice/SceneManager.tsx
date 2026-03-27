@@ -109,13 +109,6 @@ export function SceneManager() {
         )}
       </main>
 
-      {/* Footer */}
-      {(currentScene?.footerLeft || currentScene?.footerRight) && (
-        <footer className="relative z-10 flex items-center justify-between px-4 md:px-6 py-3 text-xs text-white/40 shrink-0 font-data">
-          <span>{currentScene.footerLeft || ''}</span>
-          <span>{currentScene.footerRight || ''}</span>
-        </footer>
-      )}
     </div>
   );
 }

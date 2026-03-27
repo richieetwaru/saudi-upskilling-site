@@ -1,53 +1,44 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { SlideLayout } from '@/components/layout/SlideLayout';
 import { useIsMobile } from '@/hooks/useIsMobile';
-import { resolveFooters } from '@/utils/footerResolver';
 import { informTele } from '@/utils/informTele';
 import type { CardDef } from '@/types/cards';
 import {
-    BarChart, CalloutCard,
-    InfoCard, BulletListCard, ImageCard, ChecklistCard,
-    TableCard,
+    DataTableCard, TileGridCard, SpotlightCard,
 } from '@/components/cards';
 
 /* ═══════════════════════════════════════════════════════════
-   GridView — Composable Grid Template (7 Card Types)
+   GridView — Composable Grid Template (3 Card Types)
 
-   Accepts a layout code and an array of card definitions.
-   Used by the voice agent to display upskilling data.
+   data-table  — header stats + tabular rows
+   tile-grid   — title + grid of mini tiles
+   spotlight   — avatar/image + area chart
    ═══════════════════════════════════════════════════════════ */
 
 /* ═══ Types ═══ */
 
 interface GridViewProps {
     badge?: string;
-    layout?: string; // e.g. '2x3', '1-2', '3x2'
+    layout?: string;
     cards?: CardDef[];
-    maxRows?: number; // default 3 — certified slides can opt into 4
+    maxRows?: number;
     onLogoClick?: () => void;
 }
 
 /* ═══ Card Renderer ═══ */
 
 const CARD_MAP: Record<string, React.FC<any>> = {
-    'bar-chart': BarChart,
-    'callout': CalloutCard,
-    'info-card': InfoCard,
-    'bullet-list': BulletListCard,
-    'image-card': ImageCard,
-    'checklist': ChecklistCard,
-    'table': TableCard,
-    // Aliases
-    'progress': BarChart,
+    'data-table': DataTableCard,
+    'tile-grid': TileGridCard,
+    'spotlight': SpotlightCard,
 };
 
-/* ═══ Card Size Tiers — flex-grow weights for row height distribution ═══ */
+/* ═══ Card Size Tiers ═══ */
 
 const CARD_SIZE: Record<string, number> = {
-    'callout': 2,
-    'image-card': 2, 'info-card': 2,
-    'bullet-list': 2, 'checklist': 2,
-    'bar-chart': 3, 'table': 3,
+    'data-table': 3,
+    'tile-grid': 3,
+    'spotlight': 3,
 };
 
 function getRowWeight(rowCards: CardDef[]): number {
@@ -92,7 +83,7 @@ function renderCard(card: CardDef, index: number) {
     // Card types that always render without the glass box wrapper
     const BORDERLESS = new Set<string>();
     // These card types get the glass border + bg but NO internal padding (flush fill)
-    const FLUSH_ROUNDED = new Set(['image-card', 'alert']);
+    const FLUSH_ROUNDED = new Set<string>();
     if (BORDERLESS.has(card.type) || card.borderless) return content;
     if (FLUSH_ROUNDED.has(card.type)) {
         return (
@@ -528,14 +519,12 @@ export const GridView: React.FC<GridViewProps> = ({
             _reportedUnknownTypes = new Set<string>(unknownTypes);
             informTele(
                 `[UNKNOWN CARD TYPE] ${unknownTypes.map(t => `"${t}"`).join(', ')} — rendered as blank slot(s). ` +
-                `Check spelling. Valid: callout, bar-chart, ` +
-                `bullet-list, checklist, info-card, image-card, table.`
+                `Check spelling. Valid: data-table, tile-grid, spotlight.`
             );
         }
     }, [layout, cards.length, isHybrid, rows, clampCount, resolvedLayout]);
 
     const [showSkeleton, setShowSkeleton] = useState(true);
-    const { left: footerLeft, right: footerRight } = resolveFooters(badge);
     const cardsKey = useRef(displayCards.map(c => c.type).join(','));
 
     useEffect(() => {
@@ -552,7 +541,7 @@ export const GridView: React.FC<GridViewProps> = ({
     /* ═══ EMPTY CARDS GUARD (fix #10) ═══ */
     if (displayCards.length === 0) {
         return (
-            <SlideLayout badge={badge} footerLeft={footerLeft || ''} footerRight={footerRight || ''} onLogoClick={onLogoClick}>
+            <SlideLayout badge={badge} onLogoClick={onLogoClick}>
                 <div className="flex-1 flex items-center justify-center" style={{ color: 'var(--muted-foreground, #5A6B75)' }}>
                     <span className="font-data text-base uppercase tracking-widest">Awaiting data…</span>
                 </div>
@@ -565,8 +554,6 @@ export const GridView: React.FC<GridViewProps> = ({
         return (
             <SlideLayout
                 badge={badge}
-                footerLeft={footerLeft || ""}
-                footerRight={footerRight || ""}
                 onLogoClick={onLogoClick}
             >
                 <MobileCarousel
@@ -727,8 +714,6 @@ export const GridView: React.FC<GridViewProps> = ({
     return (
         <SlideLayout
             badge={badge}
-            footerLeft={footerLeft || ""}
-            footerRight={footerRight || ""}
             onLogoClick={onLogoClick}
         >
             <div className="relative grid-container flex flex-col h-full gap-3 md:gap-4">

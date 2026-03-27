@@ -41,12 +41,6 @@ export function WelcomeLanding() {
 
       {/* Spacer for bottom control bar */}
       <div className="flex-1" />
-
-      {/* Footer */}
-      <footer className="flex items-center justify-between text-[10px] sm:text-xs font-data text-white/30 uppercase tracking-widest shrink-0 pb-12">
-        <span>BUILT BY THOUGHTWORKS</span>
-        <span>POWERED BY MOBEUS TELEGLASS</span>
-      </footer>
     </div>
   );
 }
