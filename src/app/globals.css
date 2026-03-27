@@ -346,7 +346,7 @@ body.tele-nav-pending .nav-skeleton-overlay {
   scroll-behavior: smooth;
 }
 
-/* ── Mobile: minimal frosting, larger text ── */
+/* ── Mobile: minimal frosting, large readable text ── */
 @media (max-width: 1024px) {
   .card-glass {
     --theme-card-bg: rgba(255, 255, 255, 0.03);
@@ -354,11 +354,12 @@ body.tele-nav-pending .nav-skeleton-overlay {
     --theme-card-blur: 2px;
     backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(2px);
-    padding: 1.25rem 1.25rem;
+    padding: 1.5rem;
   }
-  .card-glass h3 { font-size: 1.25rem !important; }
-  .card-glass .font-voice { font-size: 0.9375rem !important; line-height: 1.5 !important; }
-  .card-glass .font-data { font-size: 0.8125rem !important; }
+  .card-glass h3 { font-size: 1.5rem !important; line-height: 1.2 !important; }
+  .card-glass p, .card-glass .font-voice { font-size: 1.0625rem !important; line-height: 1.6 !important; }
+  .card-glass .font-data { font-size: 0.9375rem !important; line-height: 1.4 !important; }
+  .card-glass span { font-size: max(0.8125rem, inherit) !important; }
 }
 
 /* ── Avatar reveal sparkle particles ── */

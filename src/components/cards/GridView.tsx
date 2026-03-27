@@ -398,7 +398,7 @@ const MobileCarousel: React.FC<{
             <div
                 ref={scrollRef}
                 className="mobile-carousel flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
-                style={{ height: '55vh' }}
+                style={{ height: '50vh' }}
                 onScroll={handleScroll}
                 onTouchStart={handleTouchStart}
                 onMouseDown={handleTouchStart}
@@ -408,7 +408,7 @@ const MobileCarousel: React.FC<{
                         <div
                             key={`skel-${card.type}-${i}`}
                             className="snap-start shrink-0 px-4"
-                            style={{ width: '100vw', height: '55vh' }}
+                            style={{ width: '100vw', height: '50vh' }}
                         >
                             <div className="card-glass h-full rounded-xl skeleton-shimmer-bg" />
                         </div>
@@ -417,7 +417,7 @@ const MobileCarousel: React.FC<{
                         <div
                             key={`${card.type}-${i}`}
                             className="snap-start shrink-0 px-4"
-                            style={{ width: '100vw', height: '55vh' }}
+                            style={{ width: '100vw', height: '50vh' }}
                         >
                             <div className="h-full overflow-auto">
                                 {renderCard(card, i)}
@@ -429,7 +429,7 @@ const MobileCarousel: React.FC<{
 
             {/* Dot indicators */}
             {cardCount > 1 && (
-                <div className="flex items-center justify-center gap-2 py-2">
+                <div className="flex items-center justify-center gap-2 pt-4 pb-2">
                     {cards.map((_, i) => (
                         <button
                             key={i}
