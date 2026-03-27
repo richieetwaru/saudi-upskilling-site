@@ -7,7 +7,7 @@ interface SkillCardProps {
   category?: string;
   demand?: string;
   description?: string;
-  relatedJobs?: string[];
+  relatedJobs?: string[] | string;
   onAction?: (phrase: string) => void;
 }
 

@@ -6,7 +6,7 @@ interface OfferCardProps {
   salary?: string;
   startDate?: string;
   status?: string;
-  benefits?: string[];
+  benefits?: string[] | string;
   hrdfFunding?: boolean;
   deadline?: string;
   onAction?: (phrase: string) => void;

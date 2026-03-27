@@ -8,7 +8,7 @@ interface TrainingCardProps {
   cost?: string;
   level?: string;
   description?: string;
-  modules?: string[];
+  modules?: string[] | string;
   certificate?: boolean;
   onAction?: (phrase: string) => void;
 }

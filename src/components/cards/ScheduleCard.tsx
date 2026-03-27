@@ -7,7 +7,7 @@ interface ScheduleCardProps {
   time?: string;
   format?: string;
   interviewer?: string;
-  prepTips?: string[];
+  prepTips?: string[] | string;
   location?: string;
   onAction?: (phrase: string) => void;
 }

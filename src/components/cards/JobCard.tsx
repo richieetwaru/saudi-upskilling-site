@@ -6,7 +6,7 @@ interface JobCardProps {
   location?: string;
   salary?: string;
   type?: string;
-  tags?: string[];
+  tags?: string[] | string;
   description?: string;
   posted?: string;
   onAction?: (phrase: string) => void;
