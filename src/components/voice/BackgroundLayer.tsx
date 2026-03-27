@@ -16,6 +16,18 @@ function generateSparkles(count: number) {
   }));
 }
 
+const BG_STYLE = {
+  position: 'fixed' as const,
+  inset: 0,
+  zIndex: -1,
+  pointerEvents: 'none' as const,
+  backgroundRepeat: 'no-repeat',
+  backgroundSize: 'cover',
+  backgroundPosition: 'right top',
+  minWidth: '100vw',
+  minHeight: '100vh',
+};
+
 export function BackgroundLayer() {
   const sessionState = useVoiceSessionStore((s) => s.sessionState);
   const agentState = useVoiceSessionStore((s) => s.agentState);
@@ -32,13 +44,11 @@ export function BackgroundLayer() {
 
   const [isAwake, setIsAwake] = useState(false);
   useEffect(() => {
-    if (isConnected || isConnecting) {
-      setIsAwake(true);
-      return;
-    }
-    const handleMouseMove = () => setIsAwake(true);
-    window.addEventListener('mousemove', handleMouseMove, { once: true });
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    if (isConnected || isConnecting) { setIsAwake(true); return; }
+    const h = () => setIsAwake(true);
+    window.addEventListener('mousemove', h, { once: true });
+    window.addEventListener('touchstart', h, { once: true });
+    return () => { window.removeEventListener('mousemove', h); window.removeEventListener('touchstart', h); };
   }, [isConnected, isConnecting]);
 
   const [videoRevealed, setVideoRevealed] = useState(false);
@@ -69,9 +79,7 @@ export function BackgroundLayer() {
 
   const videoRef = useCallback(
     (el: HTMLVideoElement | null) => {
-      if (el && avatarVideoTrack) {
-        avatarVideoTrack.attach(el);
-      }
+      if (el && avatarVideoTrack) avatarVideoTrack.attach(el);
     },
     [avatarVideoTrack]
   );
@@ -81,43 +89,22 @@ export function BackgroundLayer() {
       {/* Base hero background */}
       <div
         style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: -1,
-          pointerEvents: 'none',
+          ...BG_STYLE,
           backgroundImage: `url(${bgImage})`,
-          backgroundPosition: 'left top',
-          backgroundRepeat: 'no-repeat',
-          backgroundSize: 'cover',
-          transform: 'scale(1.2)',
-          transformOrigin: 'left top',
-          minWidth: '100vw',
-          minHeight: '100vh',
           opacity: videoRevealed ? 0 : 1,
-          filter: 'none',
-          transition: 'opacity 1.5s ease, filter 1.2s ease',
+          transition: 'opacity 1.5s ease',
         }}
       />
 
-      {/* Grayscale overlay — when connected with avatar off */}
+      {/* Grayscale overlay — avatar off */}
       {avatarOff && (
         <div
           style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: -1,
-            pointerEvents: 'none',
+            ...BG_STYLE,
             backgroundImage: `url(${avatarThumbnailUrl || assets.backgroundHero})`,
-            backgroundPosition: 'left top',
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: 'cover',
-          transform: 'scale(1.2)',
-          transformOrigin: 'left top',
-            minWidth: '100vw',
-            minHeight: '100vh',
             opacity: 0.25,
             filter: 'saturate(0) brightness(0.6)',
-            transition: 'opacity 1s ease, filter 1s ease',
+            transition: 'opacity 1s ease',
           }}
         />
       )}
@@ -130,7 +117,7 @@ export function BackgroundLayer() {
             inset: 0,
             zIndex: -1,
             pointerEvents: 'none',
-            background: 'radial-gradient(ellipse at 60% 40%, rgba(200, 150, 46, 0.5) 0%, rgba(200, 150, 46, 0.15) 50%, transparent 80%)',
+            background: 'radial-gradient(ellipse at 60% 40%, rgba(200,150,46,0.5) 0%, rgba(200,150,46,0.15) 50%, transparent 80%)',
             opacity: videoRevealed ? 0 : 1,
             transition: 'opacity 2s ease',
           }}
@@ -147,6 +134,7 @@ export function BackgroundLayer() {
             pointerEvents: 'none',
             opacity: videoRevealed ? 1 : 0,
             transition: 'opacity 1.5s ease',
+            overflow: 'hidden',
           }}
         >
           <video
@@ -158,9 +146,7 @@ export function BackgroundLayer() {
               width: '100%',
               height: '100%',
               objectFit: 'cover',
-              objectPosition: 'left top',
-              transform: 'scale(1.2)',
-              transformOrigin: 'left top',
+              objectPosition: 'right top',
               filter: `brightness(var(--theme-video-brightness)) saturate(var(--theme-video-saturate))`,
               transition: 'filter 0.4s ease',
             }}
@@ -168,7 +154,7 @@ export function BackgroundLayer() {
         </div>
       )}
 
-      {/* Sparkle particles on avatar reveal */}
+      {/* Sparkles */}
       {showSparkles && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 1, pointerEvents: 'none', overflow: 'hidden' }}>
           {sparkles.map((s) => (
@@ -182,7 +168,7 @@ export function BackgroundLayer() {
                 height: s.size,
                 borderRadius: '50%',
                 background: 'radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(200,150,46,0.6) 50%, transparent 100%)',
-                boxShadow: `0 0 ${s.size * 2}px rgba(200,150,46,0.5), 0 0 ${s.size * 4}px rgba(255,255,255,0.2)`,
+                boxShadow: `0 0 ${s.size * 2}px rgba(200,150,46,0.5)`,
                 animation: `sparkle-float ${s.duration}s cubic-bezier(0.22, 1, 0.36, 1) ${s.delay}s both`,
               }}
             />
@@ -190,16 +176,11 @@ export function BackgroundLayer() {
         </div>
       )}
 
-      {/* Pulsing overlay — connecting or thinking */}
+      {/* Connecting pulse */}
       {showPulse && !hasVideoTrack && (
         <div
           className="hero-pulse-overlay"
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: -1,
-            pointerEvents: 'none',
-          }}
+          style={{ position: 'fixed', inset: 0, zIndex: -1, pointerEvents: 'none' }}
         />
       )}
     </>
