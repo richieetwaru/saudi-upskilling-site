@@ -137,15 +137,14 @@ export function SceneManager() {
   );
 }
 
-/** Mobile skeleton — matches carousel position (bottom of viewport, landscape) */
+/** Mobile skeleton — matches carousel position (fixed to bottom, portrait) */
 function MobileSkeleton() {
   return (
-    <div className="flex flex-col h-full w-full">
-      <div className="flex-1" />
-      <div className="px-4 shrink-0" style={{ height: '28vh' }}>
+    <div style={{ position: 'fixed', bottom: '16px', left: 0, right: 0, zIndex: 10 }}>
+      <div className="px-4" style={{ height: '55vh' }}>
         <div className="card-glass h-full rounded-xl skeleton-shimmer-bg animate-skeleton-bounce" />
       </div>
-      <div className="flex items-center justify-center gap-2 py-2 shrink-0">
+      <div className="flex items-center justify-center gap-2 py-2">
         {[0, 1, 2].map((i) => (
           <div
             key={i}

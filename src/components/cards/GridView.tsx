@@ -74,7 +74,12 @@ function renderCard(card: CardDef, index: number) {
     const Component = CARD_MAP[card.type];
     if (!Component) {
         console.warn(`[GridView] Unknown card type: ${card.type}`);
-        return null;
+        // Render a fallback glass card with the type name so it's not blank
+        return (
+            <div className="card-glass h-full flex items-center justify-center">
+                <span className="text-xs text-white/30 font-data uppercase">{card.type}</span>
+            </div>
+        );
     }
     // ── Card props resolution: supports both flat and nested formats ──
     // Flat (new, preferred):   { type, span?, label, value, ... }
@@ -406,15 +411,12 @@ const MobileCarousel: React.FC<{
     }, [pauseAutoScroll]);
 
     return (
-        <div className="flex flex-col h-full w-full">
-            {/* Spacer — pushes cards to bottom so avatar face stays visible */}
-            <div className="flex-1" />
-
-            {/* Carousel — landscape cards at bottom */}
+        <div style={{ position: 'fixed', bottom: '16px', left: 0, right: 0, zIndex: 10 }}>
+            {/* Carousel — portrait cards anchored to bottom of viewport */}
             <div
                 ref={scrollRef}
-                className="mobile-carousel flex overflow-x-auto snap-x snap-mandatory scrollbar-hide shrink-0"
-                style={{ height: '28vh' }}
+                className="mobile-carousel flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+                style={{ height: '55vh' }}
                 onScroll={handleScroll}
                 onTouchStart={handleTouchStart}
                 onMouseDown={handleTouchStart}
@@ -424,7 +426,7 @@ const MobileCarousel: React.FC<{
                         <div
                             key={`skel-${card.type}-${i}`}
                             className="snap-start shrink-0 px-4"
-                            style={{ width: '100vw', height: '28vh' }}
+                            style={{ width: '100vw', height: '55vh' }}
                         >
                             <div className="card-glass h-full rounded-xl skeleton-shimmer-bg" />
                         </div>
@@ -433,7 +435,7 @@ const MobileCarousel: React.FC<{
                         <div
                             key={`${card.type}-${i}`}
                             className="snap-start shrink-0 px-4"
-                            style={{ width: '100vw', height: '28vh' }}
+                            style={{ width: '100vw', height: '55vh' }}
                         >
                             <div className="h-full overflow-auto">
                                 {renderCard(card, i)}
@@ -445,7 +447,7 @@ const MobileCarousel: React.FC<{
 
             {/* Dot indicators */}
             {cardCount > 1 && (
-                <div className="flex items-center justify-center gap-2 py-2 shrink-0">
+                <div className="flex items-center justify-center gap-2 py-2">
                     {cards.map((_, i) => (
                         <button
                             key={i}
