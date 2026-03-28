@@ -88,11 +88,11 @@ export const InterviewCard: React.FC<InterviewCardProps> = ({
   const tips = [...parseTips(rawTips), ...extraTips];
   const questions = parseQuestions(rawQuestions);
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full overflow-y-auto overflow-x-hidden">
       {/* Difficulty badge */}
       {difficulty && (
         <span
-          className="self-start rounded-full px-3 py-1 text-[10px] font-data uppercase tracking-wider mb-3"
+          className="self-start rounded-full px-3 py-1 text-[10px] font-data uppercase tracking-wider mb-3 shrink-0"
           style={{
             background: difficulty.toLowerCase() === 'easy' ? 'rgba(34,197,94,0.15)' :
               difficulty.toLowerCase() === 'hard' ? 'rgba(239,68,68,0.15)' : 'rgba(200,150,46,0.15)',
@@ -105,23 +105,23 @@ export const InterviewCard: React.FC<InterviewCardProps> = ({
       )}
 
       {/* Title */}
-      <h3 className="font-hero text-lg font-bold text-white leading-tight">{title}</h3>
+      <h3 className="font-hero text-lg font-bold text-white leading-tight shrink-0">{title}</h3>
 
       {/* Role */}
       {role && (
-        <div className="font-voice text-sm text-white/60 mt-1">{role}</div>
+        <div className="font-voice text-sm text-white/60 mt-1 shrink-0">{role}</div>
       )}
 
       {/* Description */}
       {description && (
-        <p className="font-voice text-sm text-white/50 mt-2 leading-relaxed line-clamp-2">
+        <p className="font-voice text-sm text-white/50 mt-2 leading-relaxed line-clamp-2 shrink-0">
           {description}
         </p>
       )}
 
       {/* Tips */}
       {tips.length > 0 && (
-        <div className="mt-3 space-y-2 flex-1 min-h-0 overflow-auto">
+        <div className="mt-3 space-y-2 shrink-0">
           {tips.slice(0, 4).map((tip, i) => {
             const style = TYPE_STYLES[tip.type || 'tip'] || TYPE_STYLES.tip;
             return (
@@ -140,7 +140,7 @@ export const InterviewCard: React.FC<InterviewCardProps> = ({
 
       {/* Questions */}
       {questions.length > 0 && tips.length === 0 && (
-        <div className="mt-3 space-y-2 flex-1 min-h-0 overflow-auto">
+        <div className="mt-3 space-y-2 shrink-0">
           {questions.slice(0, 4).map((q, i) => (
             <div
               key={i}
@@ -154,7 +154,7 @@ export const InterviewCard: React.FC<InterviewCardProps> = ({
         </div>
       )}
 
-      <div className="flex-1 min-h-0" />
+      <div className="flex-1 min-h-4" />
 
       {/* Practice button */}
       <div className="flex justify-end mt-4 pt-3 shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>

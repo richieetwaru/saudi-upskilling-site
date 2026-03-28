@@ -32,7 +32,6 @@ const TOOL_DISPLAY_CONFIG: Record<string, { label: string; Icon: React.ElementTy
   save_visitor_info: { label: 'save_cloud', Icon: Cloud },
   bringIn: { label: 'start_beam', Icon: Radio },
   takeOut: { label: 'end_beam', Icon: PowerOff },
-  informTele: { label: 'update_context', Icon: RefreshCw },
   search_knowledge: { label: 'search_knowledge', Icon: BookOpen },
   create_event: { label: 'create_event', Icon: Calendar },
   update_transcript: { label: 'update_transcript', Icon: MousePointerClick },

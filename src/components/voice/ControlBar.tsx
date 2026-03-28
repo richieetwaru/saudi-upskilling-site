@@ -1,9 +1,9 @@
 'use client';
 
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import { ArrowRight, X, Mic, MicOff, MessageCircle, Headphones, Send } from 'lucide-react';
 import { useVoiceSessionStore } from '@/lib/stores/voice-session-store';
-import { playUISound, playGlassSound } from '@/utils/soundGenerator';
+import { playUISound } from '@/utils/soundGenerator';
 
 const BTN = 'w-11 h-11 flex items-center justify-center transition-colors duration-200';
 
@@ -18,15 +18,22 @@ export function ControlBar() {
   const sendTextMessage = useVoiceSessionStore((s) => s.sendTextMessage);
 
   const [chatInput, setChatInput] = useState('');
+  const [ready, setReady] = useState(false);
 
   const isConnected = sessionState === 'connected';
   const isConnecting = sessionState === 'connecting';
   const isIdle = sessionState === 'idle' || sessionState === 'error';
 
+  // Delay showing the Start button by 1s so pre-warm can load
+  useEffect(() => {
+    const t = setTimeout(() => setReady(true), 1000);
+    return () => clearTimeout(t);
+  }, []);
+
   const hasConnectedRef = useRef(false);
   if (isConnected || isConnecting) hasConnectedRef.current = true;
 
-  const handleConnect = () => { playGlassSound(); connect(); };
+  const handleConnect = () => { connect(); };
   const handleDisconnect = () => { playUISound('off', 'avatar'); disconnect(); };
   const handleToggleMute = () => { playUISound(isMuted ? 'on' : 'off', 'mic'); toggleMute(); };
   const handleToggleChatMode = () => {
@@ -50,8 +57,8 @@ export function ControlBar() {
 
   return (
     <div className="fixed bottom-6 left-0 right-0 z-[60] flex justify-center pointer-events-none transition-all duration-700 ease-out">
-      {/* IDLE: Start button */}
-      {isIdle && (
+      {/* IDLE: Start button (delayed 1s for pre-warm) */}
+      {isIdle && ready && (
         <button
           onClick={handleConnect}
           className="start-button inline-flex items-center gap-3 pointer-events-auto shadow-lg shadow-black/30"

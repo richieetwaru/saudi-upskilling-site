@@ -1,18 +1,19 @@
-# Voice AI Platform — Client Website Agent Guide
+# Saudi Upskilling Intelligence — Agent Guide
 
-> **For coding agents** (Claude Code, Cursor, Copilot, etc.) working on client websites built from this template.
+> **For coding agents** (Claude Code, Cursor, Copilot, etc.) working on the Saudi Upskilling Intelligence platform.
 
 ---
 
 ## Architecture Overview
 
-This is a **client website** deployed on the Voice AI Platform. It has a persistent voice overlay powered by LiveKit that lets a voice AI agent control the UI — showing components, navigating pages, and collecting form data.
+This is a **voice AI client website** deployed on the Mobeus platform. It features a persistent voice overlay powered by LiveKit that lets a voice AI agent ("Magic") control the UI — showing card-based scenes, navigating layouts, and guiding candidates through their upskilling journey aligned with Saudi Arabia's Vision 2030.
 
 **Key concepts:**
-- The **voice agent** (Python, runs server-side) controls the UI by calling `show_component(templateType, data)`
-- The **DynamicComponentRenderer** resolves `templateType` to a React component via the **component registry**
-- Components live in `src/components/tele-components/` and are auto-registered
-- The agent sends JSON data; the component renders it visually
+- The **voice agent** (Python, runs server-side) controls the UI by emitting DSL scene descriptions
+- The **DSL parser** (`src/utils/parseDSL.ts`) converts pipe-delimited text into `SceneData` with cards and layout
+- **GridView** renders scenes as responsive card grids/mosaics using lazy-loaded card components
+- Cards live in `src/components/cards/` and are registered in GridView's `CARD_MAP`
+- **Site functions** in `src/site-functions/` let the agent call frontend actions via RPC
 
 ---
 
@@ -20,109 +21,153 @@ This is a **client website** deployed on the Voice AI Platform. It has a persist
 
 ```
 src/
+├── app/                              ← Next.js 15 pages (single-page app)
+│   ├── layout.tsx                    ← Root layout + providers + fonts
+│   ├── page.tsx                      ← Home → renders WelcomeLanding
+│   └── globals.css                   ← Global styles + CSS theme vars
+│
 ├── components/
-│   ├── tele-components/              ← Voice-renderable components (THE MAIN LIBRARY)
-│   │   ├── component-registry.ts     ← Registry mapping type → component
-│   │   ├── types.ts                  ← TeleComponentProps interface
-│   │   ├── index.ts                  ← Public exports
-│   │   ├── BarChart.tsx              ← Example: data visualization
-│   │   ├── Form.tsx                  ← Example: interactive form
-│   │   ├── ProductCard.tsx           ← Example: content display
-│   │   └── ...                       ← More built-in components
+│   ├── cards/                        ← Card components (THE MAIN LIBRARY)
+│   │   ├── GridView.tsx              ← Card grid renderer + mosaic layout engine
+│   │   ├── CardErrorBoundary.tsx     ← Error boundary per card
+│   │   ├── JobCard.tsx               ← Job listings
+│   │   ├── SkillCard.tsx             ← Skill profiles + progress
+│   │   ├── TrainingCard.tsx          ← Training programs
+│   │   ├── InterviewCard.tsx         ← Interview tips & questions
+│   │   ├── OnboardingCard.tsx        ← Profile setup steps
+│   │   ├── AssessmentCard.tsx        ← Skill gap analysis
+│   │   ├── OfferCard.tsx             ← Job offers + HRDF funding
+│   │   ├── ProgressCard.tsx          ← Learning journey milestones
+│   │   ├── ScheduleCard.tsx          ← Interview scheduling
+│   │   ├── DataTableCard.tsx         ← Comparison tables
+│   │   ├── TileGridCard.tsx          ← Category overview tiles
+│   │   ├── BarChartCard.tsx          ← Horizontal bar charts
+│   │   ├── DonutChartCard.tsx        ← Donut/pie charts
+│   │   └── ResponseCard.tsx          ← Agent text response (supports streaming)
+│   │
 │   ├── voice/                        ← Voice infrastructure (DO NOT MODIFY)
-│   │   ├── DynamicComponentRenderer.tsx  ← Resolves type → component
-│   │   ├── AgentComponentSlot.tsx    ← Renders agent-pushed components
-│   │   ├── VoiceOverlay.tsx          ← Persistent voice panel
-│   │   ├── VoiceConnectButton.tsx    ← Connect button
-│   │   └── VoiceSessionProvider.tsx  ← LiveKit session provider
-│   ├── ui/                           ← shadcn/ui primitives
-│   ├── Header.tsx                    ← Site header
-│   └── Footer.tsx                    ← Site footer
-├── app/                              ← Next.js pages
+│   │   ├── VoiceSessionProvider.tsx  ← Root provider + keyboard shortcuts
+│   │   ├── SceneManager.tsx          ← Renders current scene (GridView or layout)
+│   │   ├── SceneLayout.tsx           ← Scene viewport wrapper
+│   │   ├── ControlBar.tsx            ← Connection + mute controls
+│   │   ├── ChatPanel.tsx             ← Chat mode sidebar
+│   │   ├── WelcomeLanding.tsx        ← Idle landing page with carousel
+│   │   ├── BackgroundLayer.tsx       ← Dark teal background + hero image
+│   │   └── ToolCallIndicator.tsx     ← Visual feedback during agent actions
+│   │
+│   ├── layouts/                      ← Custom full-page layouts (replace GridView)
+│   │   ├── HeroLayout.tsx            ← Hero section layout
+│   │   └── SlideLayout.tsx           ← Portrait slide layout
+│   │
+│   └── ui/                           ← shadcn/ui primitives
+│
+├── site-functions/                   ← Frontend functions the agent can RPC-call
+│   ├── register.ts                   ← Manifest + window registration
+│   └── setTheme.ts                   ← Example: switch theme
+│
 ├── lib/
 │   ├── stores/voice-session-store.ts ← Zustand store (DO NOT MODIFY)
 │   └── utils.ts                      ← Utility functions
-└── types/index.ts                    ← Shared TypeScript types
+│
+├── types/
+│   ├── index.ts                      ← ComponentTemplate, SessionDefaults, SceneData
+│   └── cards.ts                      ← CardDef union type (all card prop interfaces)
+│
+├── utils/
+│   ├── parseDSL.ts                   ← Converts pipe-delimited DSL → SceneData
+│   ├── informTele.ts                 ← Agent communication helper
+│   └── soundGenerator.ts            ← Audio feedback utilities
+│
+├── hooks/
+│   └── useIsMobile.ts
+│
+├── data/
+│   └── certifiedLayoutRecipes.ts     ← Pre-built layout templates
+│
+└── assets/                           ← Static images
 ```
 
 ---
 
-## Creating a New Tele-Component
+## Creating a New Card Component
 
-### Step 1: Create the component file
+### Step 1: Define the props interface
 
-Create `src/components/tele-components/MyWidget.tsx`:
+Add to `src/types/cards.ts`:
+
+```ts
+export interface MyCardProps {
+    title: string;
+    items?: string[];
+    onAction?: (phrase: string) => void;
+}
+```
+
+Add to the `CardPropsUnion`:
+```ts
+| ({ type: 'my-card' } & MyCardProps)
+```
+
+### Step 2: Create the component
+
+Create `src/components/cards/MyCard.tsx`:
 
 ```tsx
 'use client';
 
-import { TeleComponentProps } from './types';
+import type { MyCardProps } from '@/types/cards';
 
 /**
- * MyWidget — Brief description of what this component renders.
+ * MyCard — Brief description of what this card renders.
  *
- * Props (via data):
+ * Props:
  *   title: string           — Main heading
- *   items: Array<{ ... }>   — The data items
- *   showXYZ?: boolean       — Optional config (default: true)
+ *   items?: string[]        — List items
  */
-export default function MyWidget({ data, accentColor = '#2563eb', onAction }: TeleComponentProps) {
-  const title = data.title as string | undefined;
-  const items: Array<{ label: string; value: number }> = Array.isArray(data.items) ? data.items : [];
-
-  if (items.length === 0) return null;
+export function MyCard({ title, items = [] }: MyCardProps) {
+  if (!title) return null;
 
   return (
-    <div className="w-full space-y-3">
-      {title && <h3 className="text-base font-semibold">{title}</h3>}
-      {/* Render your component */}
+    <div className="w-full space-y-3 p-4">
+      <h3 className="text-base font-semibold text-white">{title}</h3>
+      {items.map((item, i) => (
+        <p key={i} className="text-sm text-white/70">{item}</p>
+      ))}
     </div>
   );
 }
 ```
 
-### Step 2: Register it in the registry
+### Step 3: Register in GridView
 
-Add one line to `src/components/tele-components/component-registry.ts`:
+In `src/components/cards/GridView.tsx`:
 
+1. Add the lazy import:
 ```ts
-reg('MyWidget', () => import('./MyWidget'));
+const MyCard = lazy(() => import('./MyCard').then(m => ({ default: m.MyCard })));
 ```
 
-That's it. The DynamicComponentRenderer will now resolve `template.type === 'MyWidget'` to your component.
+2. Add to `CARD_MAP`:
+```ts
+'my-card': MyCard,
+```
 
-### Step 3: Register the template in the database
+### Step 4: Add DSL parsing support
 
-The component discovery service automatically scans for new components on `git push` and creates ComponentTemplate records. If manually registering, create a template with:
-- `type`: `'MyWidget'` (must match the filename exactly)
-- `schema`: JSON Schema for the props
-- `defaultData`: Default values for all props
-- `description`: What the component does (used by the voice agent to decide when to show it)
+In `src/utils/parseDSL.ts`, add a case for `'my-card'` so the voice agent's DSL output can produce this card type.
 
 ---
 
-## Component Conventions (MUST FOLLOW)
+## Card Conventions (MUST FOLLOW)
 
 ### 1. File & naming
-- **Filename**: PascalCase, matching `template.type` exactly (e.g. `BarChart.tsx` → type `"BarChart"`)
-- **Location**: `src/components/tele-components/`
-- **Export**: `export default function ComponentName`
+- **Filename**: PascalCase (e.g. `MyCard.tsx`)
+- **Card type**: kebab-case in `CARD_MAP` and DSL (e.g. `'my-card'`)
+- **Location**: `src/components/cards/`
+- **Export**: Named export `export function MyCard`
 
 ### 2. Props interface
-All components receive `TeleComponentProps`:
-```ts
-interface TeleComponentProps {
-  data: Record<string, any>;     // Merged template defaults + agent data
-  accentColor?: string;           // Theme color (default: #2563eb)
-  onAction?: (phrase: string) => void;  // Send action back to voice agent
-}
-```
-
-Extract typed fields from `data` at the top of the component:
-```ts
-const title = data.title as string | undefined;
-const items: MyItem[] = Array.isArray(data.items) ? data.items : [];
-```
+All card props are defined in `src/types/cards.ts` with typed interfaces. Cards receive flat props (from DSL) or nested `props: {}` (from certified layouts). GridView normalizes both shapes.
 
 ### 3. Defensive rendering
 - Always handle missing/empty data gracefully
@@ -132,60 +177,123 @@ const items: MyItem[] = Array.isArray(data.items) ? data.items : [];
 
 ### 4. Styling
 - Use Tailwind CSS classes only (no CSS modules, no styled-components)
-- Use `accentColor` prop for theme-aware colors via `style={{ color: accentColor }}`
-- Keep components responsive (mobile-first with `md:` / `lg:` breakpoints)
-- Use `text-muted-foreground` for secondary text
+- Follow the app's color palette:
+  - **Teal**: `#1A3A4B` (backgrounds)
+  - **Gold**: `#C8962E` (accents, highlights)
+  - **White/glass**: `rgba(255,255,255,0.05)` with `backdrop-filter: blur`
+- Use `text-white`, `text-white/70` for primary/secondary text on dark backgrounds
+- Keep components responsive (mobile-first)
+- Fonts: Outfit (headings), Instrument Sans (body), JetBrains Mono (data)
 
 ### 5. Interactivity
 - Use `onAction?.(phrase)` to send user interactions back to the voice agent
-- For forms, use the `useVoiceSessionStore` `submitForm` function
 - The agent receives the action phrase and can respond conversationally
 
 ### 6. Documentation
-- Add a JSDoc comment at the top of the component listing all props with types and descriptions
-- Use the `Props (via data):` format (see existing components for examples)
+- Add a JSDoc comment listing all props with types and descriptions
 
 ### 7. No external dependencies
-- Built-in components must use ONLY: React, Tailwind, and the voice session store
-- No additional npm packages (keeps bundle size minimal)
+- Cards must use ONLY: React, Tailwind, and existing UI primitives
 - SVG-based charts preferred over chart libraries
+- No additional npm packages
 
 ---
 
-## Built-in Component Types
+## Built-in Card Types (14)
 
-| Category | Components |
-|----------|-----------|
-| **Data Viz** | BarChart, LineChart, PieChart, StatsRow, ProgressTracker |
-| **Content** | ProductCard, InfoCards, ImageGallery, QuoteCallout, FAQ, MediaContent |
-| **Interactive** | Form, ComparisonTable, Quiz, Checklist |
-| **Layout** | HeroSplit, Timeline, CarouselCards, TrioColumns, ProcessFlow |
-| **Specialized** | ProfileRoster, StatusList, NumberedList, MeetingScheduler |
+| Category | Type | Component | Purpose |
+|----------|------|-----------|---------|
+| **Data Viz** | `bar-chart` | BarChartCard | Horizontal bar charts |
+| | `donut-chart` | DonutChartCard | Donut/pie distributions |
+| | `data-table` | DataTableCard | Tabular comparisons |
+| | `tile-grid` | TileGridCard | Category overview tiles |
+| **Domain** | `job` | JobCard | Job listings from RAG |
+| | `skill` | SkillCard | Skill profiles + progress |
+| | `training` | TrainingCard | Training programs |
+| | `interview` | InterviewCard | Interview tips & questions |
+| **Journey** | `onboarding` | OnboardingCard | Profile setup steps |
+| | `assessment` | AssessmentCard | Skill gap analysis |
+| | `offer` | OfferCard | Job offers + HRDF funding |
+| | `progress` | ProgressCard | Learning journey milestones |
+| | `schedule` | ScheduleCard | Interview scheduling |
+| **System** | `response` | ResponseCard | Agent text response (streaming) |
 
 ---
 
-## How the Voice Agent Uses Components
+## GridView Layout System
 
-The Python voice agent has tools to control the UI:
+GridView supports multiple layout modes via the `layout` prop:
 
-```python
-# Agent decides to show a chart
-show_component("BarChart", {
-    "title": "Monthly Revenue",
-    "bars": [
-        {"label": "Jan", "value": 12000},
-        {"label": "Feb", "value": 15000},
-    ],
-    "unit": "$"
-})
+- **Hybrid**: `1`, `1-1`, `1-2`, `1-3`, `2-3`, `1-2-3` — auto grid balancing
+- **Mosaic**: `m:hero-sidebar`, `m:stats-side` — CSS Grid named templates
+- **Vertical**: `v:2-1`, `v:1-2` — vertical column splits
+
+---
+
+## Creating a Site Function
+
+Site functions let the voice agent call frontend actions via RPC.
+
+### Step 1: Create the function
+
+Create `src/site-functions/myFunction.ts`:
+
+```ts
+export default function myFunction(args: Record<string, any>) {
+  // Do something in the browser
+  return { success: true };
+}
+```
+
+### Step 2: Register in manifest
+
+In `src/site-functions/register.ts`, add to `siteFunctionManifest`:
+
+```ts
+myFunction: {
+  fn: myFunction,
+  description: 'What this function does (used as agent tool description)',
+  schema: { /* JSON Schema for params */ },
+  defaults: { /* default values */ },
+},
+```
+
+---
+
+## How the Voice Agent Uses Cards
+
+The Python voice agent outputs DSL (pipe-delimited text) describing scenes:
+
+```
+layout:1-2|job|title:Software Engineer|company:Aramco|salary:25,000 SAR||skill|name:Python|progress:85
 ```
 
 The flow:
-1. Agent calls `show_component` → RPC to frontend
-2. Frontend receives `{templateType: "BarChart", data: {...}}`
-3. `DynamicComponentRenderer` looks up "BarChart" in registry
-4. Lazy-loads and renders `BarChart.tsx` with the data
-5. Component appears in the `AgentComponentSlot` on the page
+1. Agent emits DSL text → sent to frontend via RPC
+2. `parseDSL` converts DSL → `SceneData` (layout + cards array)
+3. `SceneManager` passes scene to `GridView`
+4. `GridView` lazy-loads card components from `CARD_MAP` and renders them in the specified layout
+5. Cards appear in the scene viewport with transition animations
+
+---
+
+## Knowledge Base
+
+The voice agent has RAG access to domain knowledge in `public/knowledge/`:
+
+| File | Content |
+|------|---------|
+| `jobs_database.md` | Saudi job market aligned to 6 sectors |
+| `skills_catalog.md` | Skill profiles + assessment baselines |
+| `training_programs.md` | SDA, Tuwaiq, Doroob, Tamheer programs |
+| `interview_preparation.md` | Saudi company interview tips |
+| `candidate_journey.md` | 7-stage candidate flow + pre-select sequences |
+| `offers_contracts.md` | HRDF funding details, offer stages |
+| `tile_grid_data.md` | Sector overview tile data |
+
+Agent prompts live in `public/prompts/`:
+- `show-llm-system-prompt.md` — Visual (DSL) output rules + card reference
+- `speak-llm-system-prompt.md` — Conversational output rules
 
 ---
 
@@ -193,23 +301,18 @@ The flow:
 
 These files are platform infrastructure. Changes will break the voice session:
 
-- `src/components/voice/*` — Voice overlay & session management
+- `src/components/voice/*` — Voice overlay, scene management, controls
 - `src/lib/stores/voice-session-store.ts` — Zustand store
-- `src/components/voice/DynamicComponentRenderer.tsx` — Only modify if adding new resolution logic
-- `src/types/index.ts` — Core type definitions
+- `src/types/index.ts` — Core type definitions (ComponentTemplate, SceneData, etc.)
 
 ---
 
-## Quick Reference: Adding a Component
+## Quick Reference: Adding a Card
 
 ```bash
-# 1. Create the component
-touch src/components/tele-components/MyWidget.tsx
-
-# 2. Write it following TeleComponentProps interface
-# 3. Add to registry:
-#    reg('MyWidget', () => import('./MyWidget'));
-
-# 4. Push to Git → discovery service auto-registers the template
-git add -A && git commit -m "Add MyWidget tele-component" && git push
+# 1. Add props interface to src/types/cards.ts
+# 2. Add to CardPropsUnion in same file
+# 3. Create src/components/cards/MyCard.tsx
+# 4. Add lazy import + CARD_MAP entry in GridView.tsx
+# 5. Add DSL parsing case in src/utils/parseDSL.ts
 ```

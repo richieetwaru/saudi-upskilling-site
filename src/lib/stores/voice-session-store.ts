@@ -12,7 +12,7 @@ import {
 } from 'livekit-client';
 import { ComponentTemplate, SceneData } from '@/types';
 import { parseDSL } from '@/utils/parseDSL';
-import { setInformTeleRoom } from '@/utils/informTele';
+
 
 // Agent state from LiveKit
 export type AgentState =
@@ -529,36 +529,11 @@ export const useVoiceSessionStore = create<VoiceSessionState>((set, get) => ({
         try { await _preWarm.room.disconnect(); } catch {}
       }
 
-      // Remove chat-squeezed class
-      document.body.classList.remove('chat-squeezed');
-
-      set({
-        room: null,
-        sessionId: null,
-        sessionState: 'idle',
-        agentState: 'initializing',
-        agentParticipant: null,
-        isMuted: false,
-        isVolumeMuted: false,
-        isOverlayExpanded: false,
-        isChatPanelOpen: false,
-        avatarEnabled: false,
-        avatarVisible: true,
-        avatarAvailable: false,
-        avatarTogglePending: false,
-        avatarVideoTrack: null,
-        avatarAudioTrack: null,
-        agentAudioTrack: null,
-        avatarParticipant: null,
-        avatarAudioElement: null,
-        agentAudioElement: null,
-        uiComponents: [],
-        templates: [],
-        // currentScene intentionally preserved — last scene stays visible after disconnect
-        skeletonLayout: null,
-        _preWarm: null,
-        _preWarmState: 'idle',
-      });
+      // Full page refresh to guarantee clean state for next connection
+      if (typeof window !== 'undefined') {
+        window.location.reload();
+        return;
+      }
     }
   },
 
@@ -642,13 +617,28 @@ export const useVoiceSessionStore = create<VoiceSessionState>((set, get) => ({
 
   // Send typed text input to the agent
   sendTextMessage: async (text: string) => {
-    const { room } = get();
+    const { room, chatMode } = get();
     if (!room?.localParticipant) return;
 
     const trimmed = text.trim();
     if (!trimmed) return;
 
     try {
+      // In chat mode: immediately push a live-response placeholder so the agent's
+      // streaming text has a card to render into as soon as the new turn starts.
+      if (chatMode) {
+        set({
+          currentScene: {
+            id: `live-response-${Date.now()}`,
+            layout: '1',
+            cards: [{ type: 'response', live: true } as any],
+            timestamp: new Date(),
+          },
+          sceneActive: true,
+          skeletonLayout: null,
+        });
+      }
+
       await room.localParticipant.sendText(trimmed, { topic: 'lk.chat' });
       set((state) => ({
         transcripts: [
@@ -684,7 +674,7 @@ export const useVoiceSessionStore = create<VoiceSessionState>((set, get) => ({
 
   // Chat mode toggle — switches between voice and text input
   toggleChatMode: () => {
-    const { chatMode, room, isMuted } = get();
+    const { chatMode, room, isMuted, currentScene } = get();
     const entering = !chatMode;
 
     if (entering) {
@@ -692,12 +682,25 @@ export const useVoiceSessionStore = create<VoiceSessionState>((set, get) => ({
       if (room?.localParticipant && !isMuted) {
         room.localParticipant.setMicrophoneEnabled(false);
       }
-      set({
+
+      // If no scene is active, push a live-response placeholder so the user
+      // sees streaming agent text immediately when they type
+      const sceneUpdate: Partial<VoiceSessionState> = {
         chatMode: true,
         avatarVisible: false,
         isVolumeMuted: true,
         isMuted: true,
-      });
+      };
+      if (!currentScene) {
+        sceneUpdate.currentScene = {
+          id: `live-response-${Date.now()}`,
+          layout: '1',
+          cards: [{ type: 'response', live: true } as any],
+          timestamp: new Date(),
+        };
+        sceneUpdate.sceneActive = true;
+      }
+      set(sceneUpdate);
       applyAudioRouting(get);
     } else {
       // Exiting chat mode: restore avatar, unmute mic, unmute volume
@@ -869,18 +872,23 @@ function setupRoomEventListeners(
   set: (state: Partial<VoiceSessionState> | ((state: VoiceSessionState) => Partial<VoiceSessionState>)) => void,
   get: () => VoiceSessionState
 ) {
-  // Wire up informTele room reference for data channel feedback
-  setInformTeleRoom(room);
-
   // Connection state changes
   room.on(RoomEvent.ConnectionStateChanged, (connectionState: ConnectionState) => {
     console.log('Connection state:', connectionState);
     if (connectionState === ConnectionState.Disconnected) {
-      const { avatarAudioElement, agentAudioElement } = get();
+      // Guard: only reset state if THIS room is still the active room.
+      // On mobile reconnect the old room's delayed disconnect event can fire
+      // after a new room is already connected, nuking the fresh session state.
+      const currentState = get();
+      if (currentState.room !== null && currentState.room !== room) {
+        console.log('Ignoring disconnect from stale room');
+        return;
+      }
+
+      const { avatarAudioElement, agentAudioElement } = currentState;
       avatarAudioElement?.remove();
       agentAudioElement?.remove();
       document.body.classList.remove('chat-squeezed');
-      setInformTeleRoom(null);
       // Note: currentScene is NOT cleared on disconnect — last scene persists on the page
       set({
         sessionState: 'idle',
@@ -1076,7 +1084,14 @@ function setupRoomEventListeners(
 
   // Disconnection
   room.on(RoomEvent.Disconnected, () => {
-    const { avatarAudioElement, agentAudioElement } = get();
+    // Guard: ignore if a newer room has already replaced this one
+    const currentState = get();
+    if (currentState.room !== null && currentState.room !== room) {
+      console.log('Ignoring RoomEvent.Disconnected from stale room');
+      return;
+    }
+
+    const { avatarAudioElement, agentAudioElement } = currentState;
     avatarAudioElement?.remove();
     agentAudioElement?.remove();
     document.body.classList.remove('chat-squeezed');
@@ -1114,10 +1129,18 @@ function setupRoomEventListeners(
       console.log('DataReceived [ui-engine:scene]:', message.type, message);
 
       if (message.type === 'skeleton') {
-        set({
-          skeletonLayout: message.layout || message.skeleton || null,
-          sceneActive: true,
-        });
+        // In chat mode: don't show skeleton if a live-response card is already
+        // streaming text — the response card should persist until the real DSL arrives.
+        const { chatMode: isChatSkel, currentScene: curSkel } = get();
+        const hasLiveResponse = isChatSkel && curSkel?.cards?.some(
+          c => c.type === 'response' && (c as any).live === true
+        );
+        if (!hasLiveResponse) {
+          set({
+            skeletonLayout: message.layout || message.skeleton || null,
+            sceneActive: true,
+          });
+        }
       } else if (message.type === 'scene') {
         let sceneData: SceneData;
 
@@ -1153,6 +1176,11 @@ function setupRoomEventListeners(
         const { chatMode: isChatMode, currentScene: prevScene } = get();
         if (isChatMode && sceneData.cards && !sceneData.cards.some(c => c.type === 'response')) {
           sceneData.cards.unshift({ type: 'response', live: true } as any);
+          // Bump layout to account for the prepended card so GridView doesn't clip it
+          if (sceneData.layout) {
+            const oldCount = sceneData.cards.length - 1;
+            sceneData.layout = `1-${oldCount}`;
+          }
         }
 
         // If previous scene was just a live-response placeholder, don't push to history
@@ -1206,23 +1234,28 @@ function updateAgentStateFromAttributes(
     set({ agentState: stateAttr as AgentState });
 
     // In chat mode: show a live ResponseCard immediately when agent starts speaking
-    // This way the user sees the text streaming in before the DSL cards arrive
+    // This way the user sees the text streaming in before the DSL cards arrive.
+    // IMPORTANT: never overwrite a scene that already has data cards (the carousel)
+    // — that would cause the carousel to vanish when agent state re-enters 'speaking'.
     if (get && stateAttr === 'speaking') {
       const { chatMode, currentScene } = get();
       if (chatMode) {
-        const alreadyHasLiveResponse = currentScene?.cards?.some(
-          c => c.type === 'response' && (c as any).live === true
-        );
-        if (!alreadyHasLiveResponse) {
-          set((state) => ({
-            currentScene: {
-              id: `live-response-${Date.now()}`,
-              cards: [{ type: 'response', live: true } as any],
-              timestamp: new Date(),
-            },
-            sceneActive: true,
-            skeletonLayout: null,
-          }));
+        const hasDataCards = currentScene?.cards?.some(c => c.type !== 'response');
+        if (!hasDataCards) {
+          const alreadyHasLiveResponse = currentScene?.cards?.some(
+            c => c.type === 'response' && (c as any).live === true
+          );
+          if (!alreadyHasLiveResponse) {
+            set((state) => ({
+              currentScene: {
+                id: `live-response-${Date.now()}`,
+                cards: [{ type: 'response', live: true } as any],
+                timestamp: new Date(),
+              },
+              sceneActive: true,
+              skeletonLayout: null,
+            }));
+          }
         }
       }
     }
@@ -1278,6 +1311,11 @@ function registerRpcHandlers(
       const { chatMode: isChatMode2 } = get();
       if (isChatMode2 && sceneData.cards && !sceneData.cards.some(c => c.type === 'response')) {
         sceneData.cards.unshift({ type: 'response', live: true } as any);
+        // Bump layout to account for the prepended card
+        if (sceneData.layout) {
+          const oldCount = sceneData.cards.length - 1;
+          sceneData.layout = `1-${oldCount}`;
+        }
       }
 
       set((state) => ({

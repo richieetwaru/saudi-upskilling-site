@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { SlideLayout } from '@/components/layout/SlideLayout';
 import { useIsMobile } from '@/hooks/useIsMobile';
-import { informTele } from '@/utils/informTele';
 import type { CardDef } from '@/types/cards';
 import { CardErrorBoundary } from '@/components/cards/CardErrorBoundary';
 
@@ -247,13 +246,7 @@ function parseLayout(layout: string, cardCount: number, maxRows: number = 3): Pa
                 mosaicName: templateName,
             };
         }
-        // Unknown mosaic name — inform and fall back to row mode
-        informTele(
-            `[MOSAIC NOT FOUND] layout:"${layout}" — template "${templateName}" does not exist. ` +
-            `Valid mosaic names: ${Object.keys(MOSAIC_TEMPLATES).join(', ')}. ` +
-            `Falling back to auto row layout.`
-        );
-        // Fall through to row auto-detect below
+        // Unknown mosaic name — fall back to row auto-detect below
     }
 
     // ── VERTICAL MODE: "v:2-1-3" ──
@@ -494,28 +487,12 @@ export const GridView: React.FC<GridViewProps> = ({
             const expectedCount = originalRows.reduce((a, b) => a + b, 0);
             if (cards.length !== expectedCount) {
                 lastReportedMismatchRef.current = currentKey;
-                informTele(
-                    `[LAYOUT MISMATCH — AUTO-FIXED] layout:"${layout}" expects ${expectedCount} card(s) ` +
-                    `but received ${cards.length}. ` +
-                    `The grid auto-adjusted to "${resolvedLayout ?? layout}" to avoid blank holes. ` +
-                    `Next time: send exactly ${HYBRID_LAYOUTS[cards.length] ? `layout:"${HYBRID_LAYOUTS[cards.length]}"` : `${cards.length} cards`} ` +
-                    `to match your card count. Layout card counts: 1→"1x1", 2→"1-1", 3→"1-2", 4→"1-3", 5→"2-3", 6→"1-2-3", 7→"1-3-3", 8→"2-3-3", 9→"3x3".`
-                );
             }
         }
 
         // Simple CxR grid mismatch
         if (!isHybrid && clampCount != null && cards.length > 0 && cards.length !== clampCount) {
             lastReportedMismatchRef.current = currentKey;
-            const diff = cards.length - clampCount;
-            informTele(
-                `[LAYOUT MISMATCH] layout:"${layout}" is a ${clampCount}-slot grid but received ${cards.length} card(s). ` +
-                (diff < 0
-                    ? `${Math.abs(diff)} slot(s) will appear as BLANK HOLES. ` +
-                      `Fix: add ${Math.abs(diff)} more card(s), or switch to a smaller layout.`
-                    : `${diff} card(s) are SILENTLY DROPPED. ` +
-                      `Fix: remove ${diff} card(s) or switch to a larger layout.`)
-            );
         }
 
         // Unknown card type validation
@@ -524,10 +501,7 @@ export const GridView: React.FC<GridViewProps> = ({
             .filter(t => !CARD_MAP[t])
             .filter((t, i, arr) => arr.indexOf(t) === i); // unique
         if (unknownTypes.length > 0) {
-            informTele(
-                `[UNKNOWN CARD TYPE] ${unknownTypes.map(t => `"${t}"`).join(', ')} — rendered as blank slot(s). ` +
-                `Check spelling. Valid: data-table, tile-grid, bar-chart, donut-chart, job, skill, training, interview, onboarding, assessment, offer, progress, schedule.`
-            );
+            console.warn('[GridView] Unknown card types:', unknownTypes.join(', '));
         }
     }, [layout, cards.length, isHybrid, rows, clampCount, resolvedLayout]);
 
