@@ -1,5 +1,5 @@
 {
-  "version": "2.0",
+  "version": "3.0",
   "description": "Semantic tags for RAG retrieval — Saudi Upskilling Intelligence",
   "files": {
     "jobs_database.md": {
@@ -25,12 +25,12 @@
     "candidate_journey.md": {
       "tags": ["journey", "stages", "onboarding", "progress", "career path", "next step", "flow", "coaching"],
       "triggers": ["get started", "what should I do", "my journey", "next step", "where am I", "coach me", "help me"],
-      "cardTypes": ["onboarding", "coach", "progress"]
+      "cardTypes": ["onboarding", "coach", "progress", "response"]
     },
     "offers_contracts.md": {
-      "tags": ["offer", "contract", "salary", "HRDF", "funding", "benefits", "Saudization", "Nitaqat", "employment law"],
-      "triggers": ["my offer", "job offer", "contract", "HRDF funding", "salary range", "benefits", "accept offer"],
-      "cardTypes": ["offer"]
+      "tags": ["offer", "contract", "salary", "HRDF", "funding", "benefits", "Saudization", "Nitaqat", "employment law", "comparison"],
+      "triggers": ["my offer", "job offer", "contract", "HRDF funding", "salary range", "benefits", "accept offer", "compare salaries"],
+      "cardTypes": ["offer", "data-table"]
     },
     "tile_grid_data.md": {
       "tags": ["sectors", "overview", "categories", "stats", "summary", "browse", "explore", "quick stats"],
