@@ -3,8 +3,6 @@ import React from 'react';
 const C = 'var(--theme-chart-line)';
 const getColor = (opacity: number) => `color-mix(in srgb, var(--theme-chart-line) ${opacity}%, transparent)`;
 
-const CHART_COLORS = ['#60a5fa', '#34d399', '#fbbf24'];
-
 interface DataPoint {
   label: string;
   value: number;
