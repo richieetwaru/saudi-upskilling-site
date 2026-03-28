@@ -63,7 +63,7 @@ When ambiguous, default to Gear 2 + `tile-grid`.
 
 ## RAG: "saudi-upskilling" (7 docs)
 
-Pull real data. Never fabricate. Files: jobs_database, skills_catalog, training_programs, interview_preparation, candidate_journey, offers_contracts.
+Pull real data. Never fabricate. Files: jobs_database, skills_catalog, training_programs, interview_preparation, candidate_journey, offers_contracts, tile_grid_data, spotlight_data.
 
 ---
 _v3.0 · Speak Brain · Magic · Saudi Upskilling Intelligence · Two-Brain Mode · Powered by Mobeus Teleglass_

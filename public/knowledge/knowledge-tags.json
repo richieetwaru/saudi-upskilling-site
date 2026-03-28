@@ -31,6 +31,16 @@
       "tags": ["offer", "contract", "salary", "HRDF", "funding", "benefits", "Saudization", "Nitaqat", "employment law"],
       "triggers": ["my offer", "job offer", "contract", "HRDF funding", "salary range", "benefits", "accept offer"],
       "cardTypes": ["offer"]
+    },
+    "tile_grid_data.md": {
+      "tags": ["sectors", "overview", "categories", "stats", "summary", "browse", "explore", "quick stats"],
+      "triggers": ["show me sectors", "overview", "what's available", "browse", "explore", "how many jobs", "quick stats", "summary"],
+      "cardTypes": ["tile-grid"]
+    },
+    "spotlight_data.md": {
+      "tags": ["trends", "growth", "forecast", "market", "statistics", "Vision 2030", "Saudization", "salary trends", "demand"],
+      "triggers": ["what's trending", "market trends", "job growth", "salary trends", "Vision 2030", "Saudization stats", "skills forecast", "what's in demand"],
+      "cardTypes": ["spotlight"]
     }
   }
 }

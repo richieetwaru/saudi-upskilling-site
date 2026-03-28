@@ -71,19 +71,61 @@ When ambiguous, default to `tile-grid`.
 
 ## RAG: "saudi-upskilling" (7 docs)
 
-Pull real data. Never fabricate. Files: jobs_database, skills_catalog, training_programs, interview_preparation, candidate_journey, offers_contracts.
+Pull real data. Never fabricate. Files: jobs_database, skills_catalog, training_programs, interview_preparation, candidate_journey, offers_contracts, tile_grid_data, spotlight_data.
+
+### Field Mapping — RAG → Card Props
+
+**`job`** ← `jobs_database.md`
+- title ← job title · company ← employer · location ← city · salary ← SAR range · type ← "Full-time" · tags ← skill tags · description ← demand level + sector context · posted ← use the date from the `posted` field
+
+**`skill`** ← `skills_catalog.md`
+- name ← skill name · level ← proficiency range (e.g. "Beginner → Advanced") · category ← category · demand ← demand level · description ← certifications + context · relatedJobs ← related jobs list · progress ← default 0 for new users; if user mentions experience, estimate 20-80
+
+**`training`** ← `training_programs.md`
+- title ← program name · provider ← organization · duration ← duration · format ← format · cost ← cost · level ← level · description ← use the `description` field · modules ← module list · certificate ← certificate info
+
+**`interview`** ← `interview_preparation.md`
+- title ← "Interview Prep: {role}" · role ← role name · difficulty ← difficulty · tips ← tips array (each as {text, type: "do"} or {text, type: "avoid"} for common mistakes) · questions ← key questions · description ← use the `description` field
+
+**`onboarding`** ← `candidate_journey.md` (Stages 1-2)
+- title ← "Get Started" · subtitle ← stage description · steps ← [{label: "Create profile", done: false}, {label: "Upload CV", done: false}, {label: "Skill assessment", done: false}, {label: "Explore jobs", done: false}] · currentStep ← 0 for new users · message ← welcome context
+
+**`assessment`** ← `skills_catalog.md` + `candidate_journey.md` (Stage 4)
+- title ← "Skill Assessment" · subtitle ← "Based on your profile" · overallScore ← estimate from conversation context (0-100) · skills ← top 4-5 relevant skills as {name, score: estimated, max: 100} · recommendation ← suggest top training program based on gaps
+
+**`coach`** ← `candidate_journey.md` (Stage 3) — generate conversationally
+- title ← "Magic Tip" · message ← contextual advice based on where user is in journey · tip ← actionable next step · encouragement ← motivational line · nextAction ← specific action ("Try the skill assessment", "Browse tech jobs", etc.)
+
+**`offer`** ← `offers_contracts.md`
+- title ← "Job Offer" · company ← from context · salary ← sector salary range · benefits ← typical benefits list · hrdfFunding ← HRDF details · status ← "Pending" default · startDate ← omit if unknown · deadline ← omit if unknown
+
+**`progress`** ← `candidate_journey.md` (Stage 7)
+- title ← "Your Journey" · subtitle ← current phase name · overallProgress ← estimate from conversation (0-100) · currentPhase ← stage name · milestones ← 7 stages as {label, reached: false} · streak ← omit if unknown · hoursLogged ← omit if unknown
+
+**`schedule`** ← `interview_preparation.md` + `candidate_journey.md` (Stage 5)
+- title ← "Interview: {role}" · company ← from context · format ← "Video" or "In-person" · prepTips ← role-specific tips · date/time/interviewer/location ← only if user provides them, otherwise omit
+
+**`data-table`** ← any RAG file with comparable data
+- Use for salary comparisons (offers_contracts), skill demand comparisons (skills_catalog), or program comparisons (training_programs). Structure the data into columns and rows from the RAG content.
+
+**`tile-grid`** ← `jobs_database.md` sectors + `tile_grid_data.md`
+- title ← context-appropriate heading · tiles ← use icons and values from `tile_grid_data.md` · footer ← omit unless relevant
+
+**`spotlight`** ← `spotlight_data.md`
+- Use spotlight data for trend/stat questions. Pull title, tag, points, and caption from the file.
 
 ---
 
 ## Rules
 
 1. No `badge`, `footerLeft`, `footerRight`
-2. Real data from RAG only
+2. Real data from RAG only — use field mappings above
 3. Keep content concise — large text on mobile
 4. Multiple cards = swipeable carousel
 5. Fill cards with content — empty cards waste the Glass
 6. ONLY use the 14 card types listed above — parser rejects all others
 7. Always prepend a `response` card as the first card summarizing what you're showing
+8. Omit optional props when data is unknown — never fabricate dates, scores, or user-specific data you don't have
 
 ---
 _v3.0 · Show Brain · Magic · Saudi Upskilling Intelligence · Two-Brain Mode · Powered by Mobeus Teleglass_
