@@ -78,68 +78,74 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
 
       {/* Chart area — SVG area chart */}
       {points.length > 0 && (
-        <div className="flex-1 min-h-0 relative">
-          <svg viewBox="0 0 200 100" preserveAspectRatio="none" className="w-full h-full">
-            <defs>
-              <linearGradient id="spotGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#C8962E" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="#C8962E" stopOpacity="0.02" />
-              </linearGradient>
-            </defs>
+        <div className="flex-1 min-h-0 flex flex-col">
+          <div className="flex-1 min-h-0">
+            <svg viewBox="0 0 200 90" preserveAspectRatio="xMidYMid meet" className="w-full h-full">
+              <defs>
+                <linearGradient id="spotGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#C8962E" stopOpacity="0.4" />
+                  <stop offset="100%" stopColor="#C8962E" stopOpacity="0.02" />
+                </linearGradient>
+              </defs>
 
-            {/* Grid lines */}
-            {[25, 50, 75].map(y => (
-              <line key={y} x1="0" y1={y} x2="200" y2={y} stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-            ))}
+              {/* Grid lines */}
+              {[20, 40, 60].map(y => (
+                <line key={y} x1="10" y1={y} x2="190" y2={y} stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+              ))}
 
-            {/* Area fill */}
-            <path
-              d={(() => {
-                if (points.length < 2) return '';
-                const step = 200 / (points.length - 1);
-                let d = `M0,${100 - (points[0].value / maxVal) * 80}`;
-                points.forEach((p, i) => {
-                  if (i === 0) return;
-                  d += ` L${i * step},${100 - (p.value / maxVal) * 80}`;
-                });
-                d += ` L200,100 L0,100 Z`;
-                return d;
-              })()}
-              fill="url(#spotGrad)"
-            />
+              {/* Area fill */}
+              <path
+                d={(() => {
+                  if (points.length < 2) return '';
+                  const step = 180 / (points.length - 1);
+                  let d = `M10,${80 - (points[0].value / maxVal) * 65}`;
+                  points.forEach((p, i) => {
+                    if (i === 0) return;
+                    d += ` L${10 + i * step},${80 - (p.value / maxVal) * 65}`;
+                  });
+                  d += ` L190,80 L10,80 Z`;
+                  return d;
+                })()}
+                fill="url(#spotGrad)"
+              />
 
-            {/* Line */}
-            <path
-              d={(() => {
-                if (points.length < 2) return '';
-                const step = 200 / (points.length - 1);
-                let d = `M0,${100 - (points[0].value / maxVal) * 80}`;
-                points.forEach((p, i) => {
-                  if (i === 0) return;
-                  d += ` L${i * step},${100 - (p.value / maxVal) * 80}`;
-                });
-                return d;
-              })()}
-              fill="none"
-              stroke="#C8962E"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+              {/* Line */}
+              <path
+                d={(() => {
+                  if (points.length < 2) return '';
+                  const step = 180 / (points.length - 1);
+                  let d = `M10,${80 - (points[0].value / maxVal) * 65}`;
+                  points.forEach((p, i) => {
+                    if (i === 0) return;
+                    d += ` L${10 + i * step},${80 - (p.value / maxVal) * 65}`;
+                  });
+                  return d;
+                })()}
+                fill="none"
+                stroke="#C8962E"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
 
-            {/* Dots */}
-            {points.map((p, i) => {
-              const step = 200 / (points.length - 1);
-              const x = i * step;
-              const y = 100 - (p.value / maxVal) * 80;
-              return <circle key={i} cx={x} cy={y} r="3" fill="#C8962E" stroke="rgba(0,0,0,0.3)" strokeWidth="1" />;
-            })}
-          </svg>
+              {/* Dots */}
+              {points.map((p, i) => {
+                const step = 180 / (points.length - 1);
+                const x = 10 + i * step;
+                const y = 80 - (p.value / maxVal) * 65;
+                return <circle key={i} cx={x} cy={y} r="3" fill="#C8962E" stroke="rgba(0,0,0,0.3)" strokeWidth="1" />;
+              })}
+            </svg>
+          </div>
 
           {/* X-axis labels */}
-          <div className="flex justify-between mt-1">
+          <div className="flex justify-between shrink-0 mt-1 px-1">
             {points.map((p, i) => (
-              <span key={i} className="font-data text-[9px]" style={{ color: getColor(40) }}>
+              <span
+                key={i}
+                className="font-data text-[8px] text-center truncate"
+                style={{ color: getColor(40), maxWidth: `${Math.floor(100 / points.length)}%` }}
+              >
                 {p.label}
               </span>
             ))}
@@ -149,7 +155,7 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
 
       {/* Caption */}
       {caption && (
-        <div className="font-voice text-xs mt-2" style={{ color: getColor(50) }}>
+        <div className="font-voice text-xs mt-2 shrink-0" style={{ color: getColor(50) }}>
           {caption}
         </div>
       )}
