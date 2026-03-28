@@ -1,15 +1,25 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { SlideLayout } from '@/components/layout/SlideLayout';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { informTele } from '@/utils/informTele';
 import type { CardDef } from '@/types/cards';
-import {
-    DataTableCard, TileGridCard, SpotlightCard,
-    JobCard, SkillCard, TrainingCard, InterviewCard,
-    OnboardingCard, AssessmentCard, CoachCard,
-    OfferCard, ProgressCard, ScheduleCard,
-    ResponseCard,
-} from '@/components/cards';
+import { CardErrorBoundary } from '@/components/cards/CardErrorBoundary';
+
+// Lazy-load card components for code splitting
+const DataTableCard = lazy(() => import('./DataTableCard').then(m => ({ default: m.DataTableCard })));
+const TileGridCard = lazy(() => import('./TileGridCard').then(m => ({ default: m.TileGridCard })));
+const SpotlightCard = lazy(() => import('./SpotlightCard').then(m => ({ default: m.SpotlightCard })));
+const JobCard = lazy(() => import('./JobCard').then(m => ({ default: m.JobCard })));
+const SkillCard = lazy(() => import('./SkillCard').then(m => ({ default: m.SkillCard })));
+const TrainingCard = lazy(() => import('./TrainingCard').then(m => ({ default: m.TrainingCard })));
+const InterviewCard = lazy(() => import('./InterviewCard').then(m => ({ default: m.InterviewCard })));
+const OnboardingCard = lazy(() => import('./OnboardingCard').then(m => ({ default: m.OnboardingCard })));
+const AssessmentCard = lazy(() => import('./AssessmentCard').then(m => ({ default: m.AssessmentCard })));
+const CoachCard = lazy(() => import('./CoachCard').then(m => ({ default: m.CoachCard })));
+const OfferCard = lazy(() => import('./OfferCard').then(m => ({ default: m.OfferCard })));
+const ProgressCard = lazy(() => import('./ProgressCard').then(m => ({ default: m.ProgressCard })));
+const ScheduleCard = lazy(() => import('./ScheduleCard').then(m => ({ default: m.ScheduleCard })));
+const ResponseCard = lazy(() => import('./ResponseCard').then(m => ({ default: m.ResponseCard })));
 
 /* ═══════════════════════════════════════════════════════════
    GridView — 13 Card Types
@@ -31,7 +41,8 @@ interface GridViewProps {
 
 /* ═══ Card Renderer ═══ */
 
-const CARD_MAP: Record<string, React.FC<any>> = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const CARD_MAP: Record<string, React.LazyExoticComponent<React.FC<any>>> = {
     'data-table': DataTableCard,
     'tile-grid': TileGridCard,
     'spotlight': SpotlightCard,
@@ -64,8 +75,10 @@ function getRowWeight(rowCards: CardDef[]): number {
     return isNaN(raw) ? 2 : raw;
 }
 
-// Module-level dedup set for renderCard (prevents repeated informTele for same unknown type within a single render batch)
-let _reportedUnknownTypes = new Set<string>();
+// Lazy-load shimmer fallback for Suspense
+const CardLazyFallback = () => (
+    <div className="h-full w-full animate-pulse rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }} />
+);
 
 /** Clamp weights so no content row gets more than 2× the height of the smallest row. */
 function clampRowWeights(weights: number[]): number[] {
@@ -80,20 +93,22 @@ function renderCard(card: CardDef, index: number) {
     const Component = CARD_MAP[card.type];
     if (!Component) {
         console.warn(`[GridView] Unknown card type: ${card.type}`);
-        // Render a fallback glass card with the type name so it's not blank
         return (
-            <div className="card-glass h-full flex items-center justify-center">
+            <div className="card-glass h-full flex items-center justify-center" role="alert">
                 <span className="text-xs text-white/30 font-data uppercase">{card.type}</span>
             </div>
         );
     }
     const { type: _t, span: _s, props: nestedProps, ...flatProps } = card;
     const effectiveProps = { ...(nestedProps || {}), ...flatProps };
-    const content = <Component key={index} {...effectiveProps} />;
 
     return (
-        <div className="card-glass h-full" style={{ animationDelay: `${index * 100}ms` }}>
-            {content}
+        <div className="card-glass h-full" style={{ animationDelay: `${index * 100}ms` }} role="article" aria-label={`${card.type} card`}>
+            <CardErrorBoundary cardType={card.type}>
+                <Suspense fallback={<CardLazyFallback />}>
+                    <Component key={index} {...effectiveProps} />
+                </Suspense>
+            </CardErrorBoundary>
         </div>
     );
 }
@@ -435,6 +450,8 @@ const MobileCarousel: React.FC<{
                         <button
                             key={i}
                             onClick={() => { scrollToCard(i); pauseAutoScroll(); }}
+                            aria-label={`Go to card ${i + 1} of ${cardCount}`}
+                            aria-current={i === activeIndex ? 'true' : undefined}
                             className="transition-all duration-300"
                             style={{
                                 width: i === activeIndex ? 20 : 8,
@@ -507,8 +524,6 @@ export const GridView: React.FC<GridViewProps> = ({
             .filter(t => !CARD_MAP[t])
             .filter((t, i, arr) => arr.indexOf(t) === i); // unique
         if (unknownTypes.length > 0) {
-            // Clear and reset so new slides can re-report
-            _reportedUnknownTypes = new Set<string>(unknownTypes);
             informTele(
                 `[UNKNOWN CARD TYPE] ${unknownTypes.map(t => `"${t}"`).join(', ')} — rendered as blank slot(s). ` +
                 `Check spelling. Valid: data-table, tile-grid, spotlight, job, skill, training, interview, onboarding, assessment, coach, offer, progress, schedule.`

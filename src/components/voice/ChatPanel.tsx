@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { Send, Sparkles } from 'lucide-react';
 import { useVoiceSessionStore } from '@/lib/stores/voice-session-store';
 import { assets } from '@/assets';
@@ -75,11 +75,14 @@ export function ChatPanel() {
     await sendTextMessage(message);
   };
 
-  // Filter transcripts based on smart mode
-  const visibleTranscripts = transcripts.filter((t) => {
-    if (t.participant === 'tool') return showToolCalls;
-    return t.isFinal || t.isAgent;
-  });
+  // Filter transcripts based on smart mode (memoized to avoid recalc every render)
+  const visibleTranscripts = useMemo(
+    () => transcripts.filter((t) => {
+      if (t.participant === 'tool') return showToolCalls;
+      return t.isFinal || t.isAgent;
+    }),
+    [transcripts, showToolCalls]
+  );
 
   return (
     <div
@@ -180,6 +183,8 @@ export function ChatPanel() {
                 ? 'text-amber-400'
                 : 'text-gray-400/30 hover:text-gray-400/50'
               }`}
+            aria-label={showToolCalls ? 'Hide tool calls' : 'Show tool calls'}
+            aria-pressed={showToolCalls}
             title={showToolCalls ? 'Smart Mode: ON — Tool calls visible' : 'Smart Mode: OFF — Tool calls hidden'}
           >
             <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -197,12 +202,14 @@ export function ChatPanel() {
             }}
             onFocus={resetSleep}
             placeholder="Type a message..."
-            className="flex-1 min-w-0 bg-transparent text-white text-sm placeholder:text-white/30 focus:outline-none font-voice"
+            aria-label="Chat message input"
+            className="flex-1 min-w-0 bg-transparent text-white text-sm placeholder:text-white/50 focus:outline-none font-voice"
             disabled={!isConnected}
           />
           <button
             onClick={handleSend}
             disabled={!isConnected || textInput.trim().length === 0}
+            aria-label="Send message"
             className="chat-icon p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-30"
           >
             <Send className="w-4 h-4" />

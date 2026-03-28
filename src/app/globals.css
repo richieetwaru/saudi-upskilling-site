@@ -78,7 +78,7 @@
   /* Chat bubbles */
   --theme-chat-bubble: rgba(12, 14, 18, 0.85);
   --theme-chat-text: #e0e0e0;
-  --theme-chat-placeholder: rgba(255, 255, 255, 0.3);
+  --theme-chat-placeholder: rgba(255, 255, 255, 0.5);
 
   /* Video filter */
   --theme-video-brightness: 0.72;

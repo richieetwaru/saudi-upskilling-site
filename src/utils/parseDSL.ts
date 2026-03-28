@@ -23,12 +23,21 @@ export interface ParsedDSL {
     cards: CardDef[];
 }
 
-/** Normalize field — empty/'-' → undefined */
+/** Strip HTML tags and dangerous patterns to prevent XSS from agent output */
+function sanitize(val: string): string {
+    return val
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/javascript:/gi, '')
+        .replace(/on\w+\s*=/gi, '');
+}
+
+/** Normalize field — empty/'-' → undefined, sanitize output */
 function n(val: string | undefined): string | undefined {
     if (!val) return undefined;
     const trimmed = val.trim();
     if (trimmed === '' || trimmed === '-' || trimmed === 'undefined' || trimmed === 'null') return undefined;
-    return trimmed;
+    return sanitize(trimmed);
 }
 
 const VALID_TYPES = new Set([
