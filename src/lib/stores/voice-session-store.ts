@@ -928,6 +928,7 @@ function setupRoomEventListeners(
         const audioElement = track.attach() as HTMLAudioElement;
         audioElement.id = `audio-avatar-${participant.identity}`;
         audioElement.autoplay = true;
+        audioElement.volume = 0.25;
         document.body.appendChild(audioElement);
         audioElement.play().catch((e) => console.warn('Avatar audio autoplay blocked:', e));
         set({ avatarAudioTrack: track, avatarAudioElement: audioElement });
@@ -944,12 +945,14 @@ function setupRoomEventListeners(
         if (isBackgroundAudio) {
           audioElement.id = `audio-bg-${participant.identity}`;
           audioElement.autoplay = true;
+          audioElement.volume = 0.25;
           document.body.appendChild(audioElement);
           audioElement.play().catch((e) => console.warn('Background audio autoplay blocked:', e));
           console.log('Background audio track attached (always audible)');
         } else {
           audioElement.id = `audio-agent-${participant.identity}`;
           audioElement.autoplay = true;
+          audioElement.volume = 0.25;
           document.body.appendChild(audioElement);
           audioElement.play().catch((e) => console.warn('Agent audio autoplay blocked:', e));
           set({ agentAudioTrack: track, agentAudioElement: audioElement });
