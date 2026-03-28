@@ -161,7 +161,9 @@ function parseCard(type: string, fields: string[]): CardDef | null {
         case 'tile-grid': {
             const [title, subtitle, footer, ...tileFields] = fields;
             const tiles = tileFields.filter(t => n(t)).map(t => {
-                const parts = (n(t) ?? '').split(':');
+                const raw = n(t) ?? '';
+                const sep = raw.includes(';') ? ';' : ':';
+                const parts = raw.split(sep);
                 return { label: parts[0]?.trim() ?? '', value: parts[1]?.trim(), icon: parts[2]?.trim() };
             });
             return Object.assign(card, {

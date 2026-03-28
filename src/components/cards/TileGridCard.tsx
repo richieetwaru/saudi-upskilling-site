@@ -3,7 +3,7 @@ import React from 'react';
 const C = 'var(--theme-chart-line)';
 const getColor = (opacity: number) => `color-mix(in srgb, var(--theme-chart-line) ${opacity}%, transparent)`;
 
-const TILE_COLORS = ['#C8962E', '#1A3A4B', '#C8962E', '#1A3A4B', '#C8962E', '#1A3A4B'];
+const TILE_COLORS = ['#C8962E', '#3B82F6', '#22C55E', '#A855F7', '#F59E0B', '#EC4899'];
 
 interface Tile {
   label: string;
@@ -14,16 +14,32 @@ interface Tile {
 interface TileGridCardProps {
   title?: string;
   subtitle?: string;
-  tiles?: Tile[];
+  tiles?: (Tile | string)[];
   footer?: string;
+}
+
+/** Parse a tile that may arrive as a raw string "label:value:icon" or ";"-separated */
+function parseTile(raw: Tile | string): Tile {
+  if (typeof raw === 'object' && raw !== null && 'label' in raw) return raw;
+  const str = String(raw);
+  // Try colon-separated first (DSL format), then semicolon
+  const sep = str.includes(';') ? ';' : ':';
+  const parts = str.split(sep).map(s => s.trim());
+  return {
+    label: parts[0] || '',
+    value: parts[1] && parts[1] !== '—' && parts[1] !== '-' ? parts[1] : undefined,
+    icon: parts[2] && parts[2] !== '—' && parts[2] !== '-' ? parts[2] : undefined,
+  };
 }
 
 export const TileGridCard: React.FC<TileGridCardProps> = ({
   title,
   subtitle,
-  tiles = [],
+  tiles: rawTiles = [],
   footer,
 }) => {
+  const tiles = rawTiles.map(parseTile);
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Title area */}
@@ -45,28 +61,32 @@ export const TileGridCard: React.FC<TileGridCardProps> = ({
           return (
             <div
               key={i}
-              className="rounded-lg p-3 flex flex-col justify-between"
+              className="rounded-xl p-4 flex flex-col justify-between"
+              role="listitem"
+              aria-label={`${tile.label}${tile.value ? `, ${tile.value}` : ''}`}
               style={{
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.06)',
+                background: `linear-gradient(135deg, ${color}15 0%, ${color}08 100%)`,
+                border: `1px solid ${color}25`,
               }}
             >
-              {/* Icon or color dot */}
+              {/* Large icon */}
               <div
-                className="w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold mb-2"
-                style={{ background: `${color}20`, color }}
+                className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-3"
+                style={{ background: `${color}20` }}
               >
-                {tile.icon || tile.label.charAt(0)}
+                {tile.icon || tile.label.charAt(0).toUpperCase()}
               </div>
+
+              {/* Label + value */}
               <div>
+                <div className="font-hero text-sm font-semibold leading-tight" style={{ color: C }}>
+                  {tile.label}
+                </div>
                 {tile.value && (
-                  <div className="font-data text-base font-bold leading-tight" style={{ color: C }}>
+                  <div className="font-data text-xs font-bold mt-1" style={{ color }}>
                     {tile.value}
                   </div>
                 )}
-                <div className="font-voice text-xs leading-tight mt-0.5" style={{ color: getColor(65) }}>
-                  {tile.label}
-                </div>
               </div>
             </div>
           );
