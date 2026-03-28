@@ -117,6 +117,9 @@ interface VoiceSessionState {
   // Chat panel state
   isChatPanelOpen: boolean;
 
+  // Chat mode (text input replaces voice)
+  chatMode: boolean;
+
   // Theme
   theme: 'light' | 'dark';
 
@@ -134,6 +137,7 @@ interface VoiceSessionState {
   toggleAvatarHard: () => Promise<void>;
   sendTextMessage: (text: string) => Promise<void>;
   toggleChatPanel: () => void;
+  toggleChatMode: () => void;
   setOverlayExpanded: (expanded: boolean) => void;
   setOverlayVisible: (visible: boolean) => void;
   clearTranscripts: () => void;
@@ -193,6 +197,9 @@ export const useVoiceSessionStore = create<VoiceSessionState>((set, get) => ({
 
   // Chat panel
   isChatPanelOpen: false,
+
+  // Chat mode
+  chatMode: false,
 
   // Theme
   theme: 'dark',
@@ -675,6 +682,38 @@ export const useVoiceSessionStore = create<VoiceSessionState>((set, get) => ({
     }
   },
 
+  // Chat mode toggle — switches between voice and text input
+  toggleChatMode: () => {
+    const { chatMode, room, isMuted } = get();
+    const entering = !chatMode;
+
+    if (entering) {
+      // Entering chat mode: hide avatar, mute mic, mute volume
+      if (room?.localParticipant && !isMuted) {
+        room.localParticipant.setMicrophoneEnabled(false);
+      }
+      set({
+        chatMode: true,
+        avatarVisible: false,
+        isVolumeMuted: true,
+        isMuted: true,
+      });
+      applyAudioRouting(get);
+    } else {
+      // Exiting chat mode: restore avatar, unmute mic, unmute volume
+      if (room?.localParticipant) {
+        room.localParticipant.setMicrophoneEnabled(true);
+      }
+      set({
+        chatMode: false,
+        avatarVisible: true,
+        isVolumeMuted: false,
+        isMuted: false,
+      });
+      applyAudioRouting(get);
+    }
+  },
+
   // Overlay controls (legacy)
   setOverlayExpanded: (expanded) => set({ isOverlayExpanded: expanded }),
   setOverlayVisible: (visible) => set({ isOverlayVisible: visible }),
@@ -959,11 +998,11 @@ function setupRoomEventListeners(
 
     if (participant.kind === ParticipantKind.AGENT) {
       set({ agentParticipant: participant });
-      updateAgentStateFromAttributes(participant, set);
+      updateAgentStateFromAttributes(participant, set, get);
 
       participant.on('attributesChanged', (changedAttributes) => {
         if (AGENT_STATE_ATTRIBUTE in changedAttributes) {
-          updateAgentStateFromAttributes(participant, set);
+          updateAgentStateFromAttributes(participant, set, get);
         }
       });
     }
@@ -996,7 +1035,7 @@ function setupRoomEventListeners(
         return;
       }
       if (AGENT_STATE_ATTRIBUTE in changedAttributes) {
-        updateAgentStateFromAttributes(participant, set);
+        updateAgentStateFromAttributes(participant, set, get);
       }
     }
   });
@@ -1107,6 +1146,12 @@ function setupRoomEventListeners(
           };
         }
 
+        // In chat mode: prepend a live response card so user sees streaming text + data cards
+        const { chatMode: isChatMode } = get();
+        if (isChatMode && sceneData.cards && !sceneData.cards.some(c => c.type === 'response')) {
+          sceneData.cards.unshift({ type: 'response', live: true } as any);
+        }
+
         set((state) => ({
           currentScene: sceneData,
           skeletonLayout: null,
@@ -1129,11 +1174,11 @@ function setupRoomEventListeners(
 
     if (participant.kind === ParticipantKind.AGENT) {
       set({ agentParticipant: participant });
-      updateAgentStateFromAttributes(participant, set);
+      updateAgentStateFromAttributes(participant, set, get);
 
       participant.on('attributesChanged', (changedAttributes) => {
         if (AGENT_STATE_ATTRIBUTE in changedAttributes) {
-          updateAgentStateFromAttributes(participant, set);
+          updateAgentStateFromAttributes(participant, set, get);
         }
       });
     }
@@ -1143,11 +1188,34 @@ function setupRoomEventListeners(
 // Helper: Update agent state from participant attributes
 function updateAgentStateFromAttributes(
   participant: Participant,
-  set: (state: Partial<VoiceSessionState>) => void
+  set: (state: Partial<VoiceSessionState> | ((s: VoiceSessionState) => Partial<VoiceSessionState>)) => void,
+  get?: () => VoiceSessionState
 ) {
   const stateAttr = participant.attributes[AGENT_STATE_ATTRIBUTE];
   if (stateAttr) {
     set({ agentState: stateAttr as AgentState });
+
+    // In chat mode: show a live ResponseCard immediately when agent starts speaking
+    // This way the user sees the text streaming in before the DSL cards arrive
+    if (get && stateAttr === 'speaking') {
+      const { chatMode, currentScene } = get();
+      if (chatMode) {
+        const alreadyHasLiveResponse = currentScene?.cards?.some(
+          c => c.type === 'response' && (c as any).live === true
+        );
+        if (!alreadyHasLiveResponse) {
+          set((state) => ({
+            currentScene: {
+              id: `live-response-${Date.now()}`,
+              cards: [{ type: 'response', live: true } as any],
+              timestamp: new Date(),
+            },
+            sceneActive: true,
+            skeletonLayout: null,
+          }));
+        }
+      }
+    }
   }
 }
 
@@ -1195,6 +1263,12 @@ function registerRpcHandlers(
         footerRight: payload.footerRight,
         timestamp: new Date(),
       };
+
+      // In chat mode: prepend live response card
+      const { chatMode: isChatMode2 } = get();
+      if (isChatMode2 && sceneData.cards && !sceneData.cards.some(c => c.type === 'response')) {
+        sceneData.cards.unshift({ type: 'response', live: true } as any);
+      }
 
       set((state) => ({
         currentScene: sceneData,

@@ -84,6 +84,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <meta name="screen-orientation" content="portrait" />
+        <link rel="manifest" href="/manifest.json" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"

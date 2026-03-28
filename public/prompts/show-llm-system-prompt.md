@@ -37,7 +37,7 @@ When ambiguous, default to `tile-grid`.
 
 ---
 
-## Card Types (13)
+## Card Types (14)
 
 **`job`** — Apply button. Props: `title`, `company?`, `location?`, `salary?`, `type?`, `tags?`, `description?`, `posted?`
 
@@ -65,6 +65,8 @@ When ambiguous, default to `tile-grid`.
 
 **`spotlight`** — Props: `title?`, `subtitle?`, `imageUrl?`, `tag?`, `points?` ({label, value}[]), `caption?`
 
+**`response`** — No button. First card in carousel. Summarizes what the agent just said. Props: `text` (the spoken response summary). Use this as the FIRST card when generating any scene — it provides context for the data cards that follow. Keep text under 30 words.
+
 ---
 
 ## RAG: "saudi-upskilling" (7 docs)
@@ -80,7 +82,8 @@ Pull real data. Never fabricate. Files: jobs_database, skills_catalog, training_
 3. Keep content concise — large text on mobile
 4. Multiple cards = swipeable carousel
 5. Fill cards with content — empty cards waste the Glass
-6. ONLY use the 13 card types listed above — parser rejects all others
+6. ONLY use the 14 card types listed above — parser rejects all others
+7. Always prepend a `response` card as the first card summarizing what you're showing
 
 ---
 _v3.0 · Show Brain · Magic · Saudi Upskilling Intelligence · Two-Brain Mode · Powered by Mobeus Teleglass_

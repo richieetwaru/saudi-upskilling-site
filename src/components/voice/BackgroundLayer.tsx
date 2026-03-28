@@ -35,12 +35,14 @@ export function BackgroundLayer() {
   const avatarEnabled = useVoiceSessionStore((s) => s.avatarEnabled);
   const avatarVisible = useVoiceSessionStore((s) => s.avatarVisible);
   const avatarThumbnailUrl = useVoiceSessionStore((s) => s.avatarThumbnailUrl);
+  const chatMode = useVoiceSessionStore((s) => s.chatMode);
 
   const isConnected = sessionState === 'connected';
   const isConnecting = sessionState === 'connecting';
   const isThinking = isConnected && agentState === 'thinking';
   const showPulse = isConnecting || isThinking;
-  const hasVideoTrack = avatarEnabled && avatarVisible && !!avatarVideoTrack;
+  // In chat mode: suppress avatar video entirely
+  const hasVideoTrack = !chatMode && avatarEnabled && avatarVisible && !!avatarVideoTrack;
 
   const [isAwake, setIsAwake] = useState(false);
   useEffect(() => {
@@ -72,7 +74,7 @@ export function BackgroundLayer() {
     if (!hasVideoTrack) setVideoRevealed(false);
   }, [hasVideoTrack, videoRevealed]);
 
-  const avatarOff = !avatarVisible && isConnected;
+  const avatarOff = chatMode || (!avatarVisible && isConnected);
   const bgImage = avatarOff
     ? assets.backgroundEmpty
     : (avatarThumbnailUrl || assets.backgroundHero);

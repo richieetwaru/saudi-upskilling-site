@@ -35,6 +35,7 @@ const VALID_TYPES = new Set([
     'job', 'skill', 'training', 'interview',
     'onboarding', 'assessment', 'coach', 'offer', 'progress', 'schedule',
     'data-table', 'tile-grid', 'spotlight',
+    'response',
 ]);
 
 function parseCard(type: string, fields: string[]): CardDef | null {
@@ -169,6 +170,11 @@ function parseCard(type: string, fields: string[]): CardDef | null {
                 title: n(title), subtitle: n(subtitle), tag: n(tag), caption: n(caption),
                 points: points.length > 0 ? points : undefined,
             });
+        }
+        case 'response': {
+            // All fields joined as the response text
+            const text = fields.map(f => f.trim()).join(' ').trim();
+            return Object.assign(card, { text: text || '' });
         }
         default:
             return null;

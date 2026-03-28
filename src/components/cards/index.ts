@@ -16,3 +16,6 @@ export { CoachCard } from './CoachCard';
 export { OfferCard } from './OfferCard';
 export { ProgressCard } from './ProgressCard';
 export { ScheduleCard } from './ScheduleCard';
+
+// Chat mode
+export { ResponseCard } from './ResponseCard';

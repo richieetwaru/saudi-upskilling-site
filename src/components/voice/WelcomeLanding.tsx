@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { useVoiceSessionStore } from '@/lib/stores/voice-session-store';
 
 const WELCOME_CARDS = [
@@ -36,26 +37,44 @@ export function WelcomeLanding() {
   const isConnected = sessionState === 'connected';
   const isActive = isConnecting || isConnected;
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const idx = Math.round(el.scrollLeft / el.offsetWidth);
+    setActiveIdx(Math.min(idx, WELCOME_CARDS.length - 1));
+  }, []);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.addEventListener('scroll', handleScroll, { passive: true });
+    return () => el.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
+
   if (isActive) return null;
 
   return (
-    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden flex flex-col">
-      {/* Spacer — push cards below the avatar's face */}
-      <div className="flex-1 min-h-[45%]" />
+    <div className="fixed inset-0 z-[2] flex flex-col overflow-hidden">
+      {/* Top spacer — 30% keeps face visible */}
+      <div style={{ minHeight: '28%', flex: '1 1 auto' }} />
 
-      {/* Static welcome carousel */}
+      {/* Horizontal snap carousel */}
       <div
+        ref={scrollRef}
         className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide shrink-0"
-        style={{ height: '40vh' }}
+        style={{ height: '48%' }}
       >
         {WELCOME_CARDS.map((card, i) => (
           <div
             key={i}
-            className="snap-start shrink-0 px-4"
-            style={{ width: '100vw', height: '50vh' }}
+            className="snap-start shrink-0 px-4 flex items-stretch"
+            style={{ width: '100%', minWidth: '100%' }}
           >
             <div
-              className="h-full rounded-xl p-5 flex flex-col overflow-hidden"
+              className="flex-1 rounded-xl p-5 flex flex-col overflow-hidden"
               style={
                 card.style === 'white'
                   ? { background: 'rgba(255,255,255,0.92)', color: '#1A3A4B' }
@@ -84,22 +103,22 @@ export function WelcomeLanding() {
       </div>
 
       {/* Dot indicators */}
-      <div className="flex items-center justify-center gap-2 py-2 shrink-0">
+      <div className="flex items-center justify-center gap-2 py-3 shrink-0">
         {WELCOME_CARDS.map((_, i) => (
           <div
             key={i}
-            className="rounded-full"
+            className="rounded-full transition-all duration-300"
             style={{
-              width: i === 0 ? 20 : 8,
+              width: i === activeIdx ? 20 : 8,
               height: 8,
-              background: i === 0 ? '#C8962E' : 'rgba(255,255,255,0.2)',
+              background: i === activeIdx ? '#C8962E' : 'rgba(255,255,255,0.2)',
             }}
           />
         ))}
       </div>
 
-      {/* Spacer for bottom control bar */}
-      <div className="h-16" />
+      {/* Bottom spacer for control bar */}
+      <div className="h-16 shrink-0" />
     </div>
   );
 }

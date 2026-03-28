@@ -1,0 +1,17 @@
+{
+  "name": "Saudi Upskilling Intelligence",
+  "short_name": "Upskilling",
+  "description": "AI-powered career guidance aligned with Vision 2030",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0d1b2a",
+  "theme_color": "#1A3A4B",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

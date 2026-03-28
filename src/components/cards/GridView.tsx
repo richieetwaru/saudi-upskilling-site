@@ -8,6 +8,7 @@ import {
     JobCard, SkillCard, TrainingCard, InterviewCard,
     OnboardingCard, AssessmentCard, CoachCard,
     OfferCard, ProgressCard, ScheduleCard,
+    ResponseCard,
 } from '@/components/cards';
 
 /* ═══════════════════════════════════════════════════════════
@@ -44,6 +45,7 @@ const CARD_MAP: Record<string, React.FC<any>> = {
     'offer': OfferCard,
     'progress': ProgressCard,
     'schedule': ScheduleCard,
+    'response': ResponseCard,
 };
 
 /* ═══ Card Size Tiers ═══ */

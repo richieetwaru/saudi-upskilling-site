@@ -15,6 +15,8 @@ export function SceneManager() {
   const sceneHistory = useVoiceSessionStore((s) => s.sceneHistory);
   const tellAgent = useVoiceSessionStore((s) => s.tellAgent);
   const skeletonLayout = useVoiceSessionStore((s) => s.skeletonLayout);
+  const transcripts = useVoiceSessionStore((s) => s.transcripts);
+  const agentState = useVoiceSessionStore((s) => s.agentState);
 
   const handleAction = useCallback(
     (phrase: string) => {
@@ -31,6 +33,23 @@ export function SceneManager() {
     const name = match[1].toLowerCase().trim();
     return LAYOUT_MAP[name] || null;
   }, [currentScene?.layout]);
+
+  // Enrich live response cards with streaming transcript data
+  const enrichedCards = useMemo(() => {
+    const cards = currentScene?.cards;
+    if (!cards) return cards;
+    return cards.map(card => {
+      if (card.type === 'response' && (card as any).live) {
+        // Get latest agent text (streaming or final)
+        const agentEntries = transcripts.filter(t => t.isAgent);
+        const streaming = agentEntries.find(t => !t.isFinal);
+        const lastFinal = [...agentEntries].reverse().find(t => t.isFinal);
+        const liveText = streaming?.text || lastFinal?.text || '';
+        return { ...card, text: liveText, isStreaming: agentState === 'speaking' };
+      }
+      return card;
+    });
+  }, [currentScene?.cards, transcripts, agentState]);
 
   if (!sceneActive && !currentScene) return null;
   if (!currentScene && !skeletonLayout) return null;
@@ -83,7 +102,7 @@ export function SceneManager() {
               const LayoutComponent = customLayout;
               return (
                 <LayoutComponent
-                  cards={currentScene.cards || []}
+                  cards={enrichedCards || currentScene.cards || []}
                   badge={currentScene.badge}
                   layout={currentScene.layout}
                   maxRows={currentScene.maxRows}
@@ -91,15 +110,15 @@ export function SceneManager() {
               );
             })()}
           </Suspense>
-        ) : currentScene?.cards && currentScene.cards.length > 0 ? (
+        ) : enrichedCards && enrichedCards.length > 0 ? (
           <Suspense
             fallback={<div className="animate-pulse h-full bg-white/5 rounded-xl" />}
           >
             <GridView
-              badge={currentScene.badge}
-              layout={currentScene.layout}
-              cards={currentScene.cards}
-              maxRows={currentScene.maxRows}
+              badge={currentScene?.badge}
+              layout={currentScene?.layout}
+              cards={enrichedCards || currentScene?.cards}
+              maxRows={currentScene?.maxRows}
             />
           </Suspense>
         ) : (
