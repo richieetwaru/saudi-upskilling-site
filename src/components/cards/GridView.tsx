@@ -399,7 +399,7 @@ const MobileCarousel: React.FC<{
             <div
                 ref={scrollRef}
                 className="mobile-carousel flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
-                style={{ height: '50vh' }}
+                style={{ height: '55vh' }}
                 onScroll={handleScroll}
                 onTouchStart={handleTouchStart}
                 onMouseDown={handleTouchStart}
@@ -409,7 +409,7 @@ const MobileCarousel: React.FC<{
                         <div
                             key={`skel-${card.type}-${i}`}
                             className="snap-start shrink-0 px-4"
-                            style={{ width: '100vw', height: '50vh' }}
+                            style={{ width: '100vw', height: '55vh' }}
                         >
                             <div className="card-glass h-full rounded-xl skeleton-shimmer-bg" />
                         </div>
@@ -418,7 +418,7 @@ const MobileCarousel: React.FC<{
                         <div
                             key={`${card.type}-${i}`}
                             className="snap-start shrink-0 px-4"
-                            style={{ width: '100vw', height: '50vh' }}
+                            style={{ width: '100vw', height: '55vh' }}
                         >
                             <div className="h-full overflow-auto">
                                 {renderCard(card, i)}

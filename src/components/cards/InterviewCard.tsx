@@ -15,21 +15,33 @@ interface InterviewCardProps {
   onAction?: (phrase: string) => void;
 }
 
+/** Extract text from {text:...,type:...} or {text:...} format */
+function extractTextField(s: string): { text: string; type?: string } {
+  // Match {text:VALUE} or {"text":"VALUE","type":"VALUE"}
+  const textMatch = s.match(/["']?text["']?\s*[:=]\s*["']?([^"'}]+)["']?/);
+  const typeMatch = s.match(/["']?type["']?\s*[:=]\s*["']?([^"'}]+)["']?/);
+  if (textMatch) {
+    return { text: textMatch[1].trim(), type: typeMatch?.[1]?.trim() };
+  }
+  // Plain string
+  return { text: s.replace(/^[{[\s]+|[}\]\s]+$/g, '').trim() };
+}
+
 /** Safely parse tips — handles arrays, stringified JSON, or plain strings */
 function parseTips(raw: Tip[] | string | undefined): Tip[] {
   if (!raw) return [];
   if (Array.isArray(raw)) return raw;
   if (typeof raw === 'string') {
-    // Try JSON parse
+    // Try JSON parse first
     try {
       const parsed = JSON.parse(raw.startsWith('[') ? raw : `[${raw}]`);
       if (Array.isArray(parsed)) return parsed;
     } catch {}
-    // Split by semicolons as fallback
-    return raw.split(';').map(s => s.trim()).filter(Boolean).map(s => {
-      try { return JSON.parse(s); } catch {}
-      return { text: s.replace(/^\{.*?\}$/, s), type: 'tip' as const };
-    });
+    // Split by semicolons or }; pattern and extract text fields
+    return raw.split(/;\s*(?=\{|$)/).map(s => s.trim()).filter(Boolean).map(s => {
+      const extracted = extractTextField(s);
+      return { text: extracted.text, type: (extracted.type || 'tip') as Tip['type'] };
+    }).filter(t => t.text.length > 0);
   }
   return [];
 }
@@ -40,9 +52,13 @@ function parseQuestions(raw: string[] | string | undefined): string[] {
   if (typeof raw === 'string') {
     try {
       const parsed = JSON.parse(raw.startsWith('[') ? raw : `[${raw}]`);
-      if (Array.isArray(parsed)) return parsed;
+      if (Array.isArray(parsed)) return parsed.map(String);
     } catch {}
-    return raw.split(';').map(s => s.trim().replace(/^["']|["']$/g, '')).filter(Boolean);
+    // Handle {text:...} format or plain semicolon-delimited
+    return raw.split(/;\s*(?=\{|"|$)/).map(s => {
+      const extracted = extractTextField(s);
+      return extracted.text;
+    }).map(s => s.replace(/^["']|["']$/g, '')).filter(Boolean);
   }
   return [];
 }
