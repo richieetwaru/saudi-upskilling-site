@@ -1147,16 +1147,23 @@ function setupRoomEventListeners(
         }
 
         // In chat mode: prepend a live response card so user sees streaming text + data cards
-        const { chatMode: isChatMode } = get();
+        const { chatMode: isChatMode, currentScene: prevScene } = get();
         if (isChatMode && sceneData.cards && !sceneData.cards.some(c => c.type === 'response')) {
           sceneData.cards.unshift({ type: 'response', live: true } as any);
         }
+
+        // If previous scene was just a live-response placeholder, don't push to history
+        const isLivePlaceholder = prevScene?.id?.startsWith('live-response-');
+
+        console.log('[scene] DSL arrived:', sceneData.cards?.length, 'cards, chatMode:', isChatMode, 'prevWasLive:', isLivePlaceholder);
 
         set((state) => ({
           currentScene: sceneData,
           skeletonLayout: null,
           sceneActive: true,
-          sceneHistory: state.currentScene ? [...state.sceneHistory, state.currentScene] : state.sceneHistory,
+          sceneHistory: isLivePlaceholder
+            ? state.sceneHistory  // don't push placeholder to history
+            : (state.currentScene ? [...state.sceneHistory, state.currentScene] : state.sceneHistory),
           sceneFuture: [],
         }));
       }

@@ -520,11 +520,18 @@ export const GridView: React.FC<GridViewProps> = ({
     const cardsKey = useRef(displayCards.map(c => c.type).join(','));
 
     useEffect(() => {
-        // When cards change, show skeleton for 250ms
+        // When card TYPES change, show skeleton for 250ms
+        // Exclude response card content changes (it updates every word via live streaming)
         const newKey = displayCards.map(c => c.type).join(',');
         if (newKey !== cardsKey.current) {
             cardsKey.current = newKey;
-            setShowSkeleton(true);
+            // Don't flash skeleton if only change is adding response to existing cards
+            const prevTypes = cardsKey.current.split(',');
+            const newTypes = newKey.split(',');
+            const onlyAddedResponse = newTypes.length === prevTypes.length + 1 && newTypes[0] === 'response';
+            if (!onlyAddedResponse) {
+                setShowSkeleton(true);
+            }
         }
         const timer = setTimeout(() => setShowSkeleton(false), 250);
         return () => clearTimeout(timer);
