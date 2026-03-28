@@ -89,13 +89,17 @@ export interface AssessmentCardProps {
     onAction?: (phrase: string) => void;
 }
 
-export interface CoachCardProps {
+export interface BarChartBar {
+    label: string;
+    value: number;
+}
+
+export interface BarChartCardProps {
     title?: string;
-    message: string;
-    tip?: string;
-    encouragement?: string;
-    nextAction?: string;
-    onAction?: (phrase: string) => void;
+    subtitle?: string;
+    bars?: BarChartBar[];
+    unit?: string;
+    footer?: string;
 }
 
 export interface OfferCardProps {
@@ -169,18 +173,18 @@ export interface TileGridCardProps {
     footer?: string;
 }
 
-export interface SpotlightDataPoint {
+export interface DonutChartSegment {
     label: string;
     value: number;
 }
 
-export interface SpotlightCardProps {
+export interface DonutChartCardProps {
     title?: string;
     subtitle?: string;
-    imageUrl?: string;
-    tag?: string;
-    points?: SpotlightDataPoint[];
-    caption?: string;
+    segments?: DonutChartSegment[];
+    centerLabel?: string;
+    centerValue?: string;
+    footer?: string;
 }
 
 export interface ResponseCardProps {
@@ -199,13 +203,13 @@ export type CardPropsUnion =
     | ({ type: 'interview' } & InterviewCardProps)
     | ({ type: 'onboarding' } & OnboardingCardProps)
     | ({ type: 'assessment' } & AssessmentCardProps)
-    | ({ type: 'coach' } & CoachCardProps)
+    | ({ type: 'bar-chart' } & BarChartCardProps)
     | ({ type: 'offer' } & OfferCardProps)
     | ({ type: 'progress' } & ProgressCardProps)
     | ({ type: 'schedule' } & ScheduleCardProps)
     | ({ type: 'data-table' } & DataTableCardProps)
     | ({ type: 'tile-grid' } & TileGridCardProps)
-    | ({ type: 'spotlight' } & SpotlightCardProps)
+    | ({ type: 'donut-chart' } & DonutChartCardProps)
     | ({ type: 'response' } & ResponseCardProps);
 
 // ── CardDef (runtime shape — accepts both flat and nested props) ──

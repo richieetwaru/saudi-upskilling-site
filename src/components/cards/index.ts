@@ -1,7 +1,8 @@
 // Data & visualization
 export { DataTableCard } from './DataTableCard';
 export { TileGridCard } from './TileGridCard';
-export { SpotlightCard } from './SpotlightCard';
+export { BarChartCard } from './BarChartCard';
+export { DonutChartCard } from './DonutChartCard';
 
 // Domain cards
 export { JobCard } from './JobCard';
@@ -12,7 +13,6 @@ export { InterviewCard } from './InterviewCard';
 // Journey cards
 export { OnboardingCard } from './OnboardingCard';
 export { AssessmentCard } from './AssessmentCard';
-export { CoachCard } from './CoachCard';
 export { OfferCard } from './OfferCard';
 export { ProgressCard } from './ProgressCard';
 export { ScheduleCard } from './ScheduleCard';

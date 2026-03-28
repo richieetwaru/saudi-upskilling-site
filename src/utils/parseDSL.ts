@@ -42,8 +42,8 @@ function n(val: string | undefined): string | undefined {
 
 const VALID_TYPES = new Set([
     'job', 'skill', 'training', 'interview',
-    'onboarding', 'assessment', 'coach', 'offer', 'progress', 'schedule',
-    'data-table', 'tile-grid', 'spotlight',
+    'onboarding', 'assessment', 'offer', 'progress', 'schedule',
+    'data-table', 'tile-grid', 'bar-chart', 'donut-chart',
     'response',
 ]);
 
@@ -113,11 +113,18 @@ function parseCard(type: string, fields: string[]): CardDef | null {
                 recommendation: n(recommendation), skills: skills.length > 0 ? skills : undefined,
             });
         }
-        case 'coach': {
-            const [title, message, tip, encouragement, nextAction] = fields;
+        case 'bar-chart': {
+            const [title, subtitle, unit, footer, ...barFields] = fields;
+            const bars = barFields.filter(b => n(b)).map(b => {
+                const raw = n(b) ?? '';
+                const sep = raw.includes(';') ? ';' : ':';
+                const parts = raw.split(sep);
+                const numMatch = parts[1]?.match(/[\d.]+/);
+                return { label: parts[0]?.trim() ?? '', value: numMatch ? parseFloat(numMatch[0]) : 0 };
+            });
             return Object.assign(card, {
-                title: n(title), message: n(message) ?? '', tip: n(tip),
-                encouragement: n(encouragement), nextAction: n(nextAction),
+                title: n(title), subtitle: n(subtitle), unit: n(unit), footer: n(footer),
+                bars: bars.length > 0 ? bars : undefined,
             });
         }
         case 'offer': {
@@ -171,21 +178,19 @@ function parseCard(type: string, fields: string[]): CardDef | null {
                 tiles: tiles.length > 0 ? tiles : undefined,
             });
         }
-        case 'spotlight': {
-            const [title, subtitle, tag, caption, ...pointFields] = fields;
-            const points = pointFields.filter(p => n(p)).map(p => {
-                const raw = n(p) ?? '';
+        case 'donut-chart': {
+            const [title, subtitle, centerLabel, centerValue, footer, ...segFields] = fields;
+            const segments = segFields.filter(s => n(s)).map(s => {
+                const raw = n(s) ?? '';
                 const sep = raw.includes(';') ? ';' : ':';
                 const parts = raw.split(sep);
-                const label = parts[0]?.trim() ?? '';
-                // Extract first number from value string (e.g. "34% YoY" → 34)
-                const valStr = parts[1]?.trim() ?? '0';
-                const numMatch = valStr.match(/[\d.]+/);
-                return { label, value: numMatch ? parseFloat(numMatch[0]) : 0 };
+                const numMatch = parts[1]?.match(/[\d.]+/);
+                return { label: parts[0]?.trim() ?? '', value: numMatch ? parseFloat(numMatch[0]) : 0 };
             });
             return Object.assign(card, {
-                title: n(title), subtitle: n(subtitle), tag: n(tag), caption: n(caption),
-                points: points.length > 0 ? points : undefined,
+                title: n(title), subtitle: n(subtitle),
+                centerLabel: n(centerLabel), centerValue: n(centerValue), footer: n(footer),
+                segments: segments.length > 0 ? segments : undefined,
             });
         }
         case 'response': {

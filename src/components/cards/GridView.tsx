@@ -8,14 +8,14 @@ import { CardErrorBoundary } from '@/components/cards/CardErrorBoundary';
 // Lazy-load card components for code splitting
 const DataTableCard = lazy(() => import('./DataTableCard').then(m => ({ default: m.DataTableCard })));
 const TileGridCard = lazy(() => import('./TileGridCard').then(m => ({ default: m.TileGridCard })));
-const SpotlightCard = lazy(() => import('./SpotlightCard').then(m => ({ default: m.SpotlightCard })));
+const BarChartCard = lazy(() => import('./BarChartCard').then(m => ({ default: m.BarChartCard })));
+const DonutChartCard = lazy(() => import('./DonutChartCard').then(m => ({ default: m.DonutChartCard })));
 const JobCard = lazy(() => import('./JobCard').then(m => ({ default: m.JobCard })));
 const SkillCard = lazy(() => import('./SkillCard').then(m => ({ default: m.SkillCard })));
 const TrainingCard = lazy(() => import('./TrainingCard').then(m => ({ default: m.TrainingCard })));
 const InterviewCard = lazy(() => import('./InterviewCard').then(m => ({ default: m.InterviewCard })));
 const OnboardingCard = lazy(() => import('./OnboardingCard').then(m => ({ default: m.OnboardingCard })));
 const AssessmentCard = lazy(() => import('./AssessmentCard').then(m => ({ default: m.AssessmentCard })));
-const CoachCard = lazy(() => import('./CoachCard').then(m => ({ default: m.CoachCard })));
 const OfferCard = lazy(() => import('./OfferCard').then(m => ({ default: m.OfferCard })));
 const ProgressCard = lazy(() => import('./ProgressCard').then(m => ({ default: m.ProgressCard })));
 const ScheduleCard = lazy(() => import('./ScheduleCard').then(m => ({ default: m.ScheduleCard })));
@@ -45,14 +45,14 @@ interface GridViewProps {
 const CARD_MAP: Record<string, React.LazyExoticComponent<React.FC<any>>> = {
     'data-table': DataTableCard,
     'tile-grid': TileGridCard,
-    'spotlight': SpotlightCard,
+    'bar-chart': BarChartCard,
+    'donut-chart': DonutChartCard,
     'job': JobCard,
     'skill': SkillCard,
     'training': TrainingCard,
     'interview': InterviewCard,
     'onboarding': OnboardingCard,
     'assessment': AssessmentCard,
-    'coach': CoachCard,
     'offer': OfferCard,
     'progress': ProgressCard,
     'schedule': ScheduleCard,
@@ -62,9 +62,9 @@ const CARD_MAP: Record<string, React.LazyExoticComponent<React.FC<any>>> = {
 /* ═══ Card Size Tiers ═══ */
 
 const CARD_SIZE: Record<string, number> = {
-    'data-table': 3, 'tile-grid': 3, 'spotlight': 3,
+    'data-table': 3, 'tile-grid': 3, 'bar-chart': 3, 'donut-chart': 3,
     'job': 3, 'skill': 3, 'training': 3, 'interview': 3,
-    'onboarding': 3, 'assessment': 3, 'coach': 3,
+    'onboarding': 3, 'assessment': 3,
     'offer': 3, 'progress': 3, 'schedule': 3,
 };
 
@@ -526,7 +526,7 @@ export const GridView: React.FC<GridViewProps> = ({
         if (unknownTypes.length > 0) {
             informTele(
                 `[UNKNOWN CARD TYPE] ${unknownTypes.map(t => `"${t}"`).join(', ')} — rendered as blank slot(s). ` +
-                `Check spelling. Valid: data-table, tile-grid, spotlight, job, skill, training, interview, onboarding, assessment, coach, offer, progress, schedule.`
+                `Check spelling. Valid: data-table, tile-grid, bar-chart, donut-chart, job, skill, training, interview, onboarding, assessment, offer, progress, schedule.`
             );
         }
     }, [layout, cards.length, isHybrid, rows, clampCount, resolvedLayout]);
