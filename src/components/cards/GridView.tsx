@@ -520,16 +520,22 @@ export const GridView: React.FC<GridViewProps> = ({
     const cardsKey = useRef(displayCards.map(c => c.type).join(','));
 
     useEffect(() => {
-        // When card TYPES change, show skeleton for 250ms
-        // Exclude response card content changes (it updates every word via live streaming)
         const newKey = displayCards.map(c => c.type).join(',');
         if (newKey !== cardsKey.current) {
+            const prevKey = cardsKey.current;
             cardsKey.current = newKey;
-            // Don't flash skeleton if only change is adding response to existing cards
-            const prevTypes = cardsKey.current.split(',');
-            const newTypes = newKey.split(',');
-            const onlyAddedResponse = newTypes.length === prevTypes.length + 1 && newTypes[0] === 'response';
-            if (!onlyAddedResponse) {
+
+            // Don't flash skeleton if:
+            // - response card was added/kept as first card (data cards arrived behind it)
+            // - only the response card existed before and now data cards joined it
+            const prevTypes = prevKey.split(',').filter(Boolean);
+            const newTypes = newKey.split(',').filter(Boolean);
+            const responseStayed = newTypes[0] === 'response' && (
+                prevTypes[0] === 'response' ||           // response was already first
+                prevTypes.length === 0                     // was empty
+            );
+
+            if (!responseStayed) {
                 setShowSkeleton(true);
             }
         }
