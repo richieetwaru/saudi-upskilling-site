@@ -2,7 +2,7 @@ import React from 'react';
 
 interface CoachCardProps {
   title?: string;
-  message: string;
+  message?: string;
   tip?: string;
   encouragement?: string;
   nextAction?: string;
@@ -11,7 +11,7 @@ interface CoachCardProps {
 
 export const CoachCard: React.FC<CoachCardProps> = ({
   title = 'Coach Tip',
-  message,
+  message = '',
   tip,
   encouragement,
   nextAction,

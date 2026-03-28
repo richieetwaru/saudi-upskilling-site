@@ -58,14 +58,15 @@ export const DataTableCard: React.FC<DataTableCardProps> = ({
       )}
 
       {/* Table */}
-      <div className="flex-1 min-h-0 overflow-auto">
-        <table className="w-full">
+      <div className="flex-1 min-h-0 overflow-auto" role="region" aria-label={title || 'Data table'}>
+        <table className="w-full" role="table">
           {columns.length > 0 && (
             <thead>
               <tr>
                 {columns.map((col, i) => (
                   <th
                     key={i}
+                    scope="col"
                     className="font-data text-xs uppercase tracking-wider text-left pb-2 pr-3"
                     style={{ color: getColor(50), borderBottom: '1px solid rgba(255,255,255,0.08)' }}
                   >
@@ -76,9 +77,9 @@ export const DataTableCard: React.FC<DataTableCardProps> = ({
             </thead>
           )}
           <tbody>
-            {rows.map((row, ri) => (
+            {rows.filter(row => row && Array.isArray(row.cells)).map((row, ri) => (
               <tr key={ri}>
-                {(row.cells || []).map((cell, ci) => (
+                {row.cells.map((cell, ci) => (
                   <td
                     key={ci}
                     className="font-voice text-sm py-2 pr-3"

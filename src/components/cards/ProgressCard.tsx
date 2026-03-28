@@ -80,6 +80,8 @@ export const ProgressCard: React.FC<ProgressCardProps> = ({
                 <div
                   className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold"
                   style={{ background: m.reached ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.15)', color: m.reached ? '#C8962E' : 'rgba(255,255,255,0.5)' }}
+                  role="img"
+                  aria-label={m.reached ? 'Completed' : 'Not yet reached'}
                 >
                   {m.reached ? '✓' : ''}
                 </div>
@@ -88,6 +90,9 @@ export const ProgressCard: React.FC<ProgressCardProps> = ({
                 </span>
               </div>
             ))}
+            {milestones.length > 5 && (
+              <span className="font-data text-[10px] text-white/40">+{milestones.length - 5} more</span>
+            )}
           </div>
         )}
 

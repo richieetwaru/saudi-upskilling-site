@@ -38,7 +38,7 @@ export const TileGridCard: React.FC<TileGridCardProps> = ({
   tiles: rawTiles = [],
   footer,
 }) => {
-  const tiles = rawTiles.map(parseTile);
+  const tiles = rawTiles.map(parseTile).filter(t => t.label.length > 0);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -73,6 +73,7 @@ export const TileGridCard: React.FC<TileGridCardProps> = ({
               <div
                 className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-3"
                 style={{ background: `${color}20` }}
+                aria-hidden="true"
               >
                 {tile.icon || tile.label.charAt(0).toUpperCase()}
               </div>

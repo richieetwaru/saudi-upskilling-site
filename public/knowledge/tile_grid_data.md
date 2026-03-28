@@ -1,11 +1,11 @@
 # Tile Grid Data — Saudi Upskilling Intelligence
 
 ## Sector Overview
-- **Technology** — Icon: 💻 — Jobs: 7 — Growth: Very High
-- **Healthcare** — Icon: 🏥 — Jobs: 4 — Growth: High
-- **Finance** — Icon: 📊 — Jobs: 3 — Growth: High
-- **Energy** — Icon: ⚡ — Jobs: 2 — Growth: High
-- **Tourism & Entertainment** — Icon: 🎭 — Jobs: 2 — Growth: Medium
+- **Technology** — Icon: 💻 — 7 jobs — Growth: Very High
+- **Healthcare** — Icon: 🏥 — 4 jobs — Growth: High
+- **Finance** — Icon: 📊 — 3 jobs — Growth: High
+- **Energy** — Icon: ⚡ — 2 jobs — Growth: High
+- **Tourism & Entertainment** — Icon: 🎭 — 2 jobs — Growth: Medium
 
 ## Skill Categories
 - **Technology Skills** — Icon: 🖥️ — Count: 6 — Top demand: Cloud, Cyber, AI

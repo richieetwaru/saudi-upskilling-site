@@ -15,8 +15,19 @@ interface SpotlightCardProps {
   subtitle?: string;
   imageUrl?: string;
   tag?: string;
-  points?: DataPoint[];
+  points?: (DataPoint | string)[];
   caption?: string;
+}
+
+/** Parse a point that may arrive as string "label:value" or object */
+function parsePoint(raw: DataPoint | string): DataPoint {
+  if (typeof raw === 'object' && raw !== null && 'label' in raw) return raw;
+  const str = String(raw);
+  const sep = str.includes(';') ? ';' : ':';
+  const parts = str.split(sep).map(s => s.trim());
+  // Extract first number from value string (e.g. "34% YoY" → 34)
+  const numMatch = parts[1]?.match(/[\d.]+/);
+  return { label: parts[0] || '', value: numMatch ? parseFloat(numMatch[0]) : 0 };
 }
 
 export const SpotlightCard: React.FC<SpotlightCardProps> = ({
@@ -24,10 +35,11 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
   subtitle,
   imageUrl,
   tag,
-  points = [],
+  points: rawPoints = [],
   caption,
 }) => {
-  const maxVal = Math.max(...points.map(p => p.value), 1);
+  const points = (rawPoints as (DataPoint | string)[]).map(parsePoint).filter(p => p.label);
+  const maxVal = points.length > 0 ? Math.max(...points.map(p => p.value), 1) : 1;
 
   return (
     <div className="flex flex-col h-full overflow-hidden">

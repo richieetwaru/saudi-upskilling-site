@@ -174,8 +174,14 @@ function parseCard(type: string, fields: string[]): CardDef | null {
         case 'spotlight': {
             const [title, subtitle, tag, caption, ...pointFields] = fields;
             const points = pointFields.filter(p => n(p)).map(p => {
-                const parts = (n(p) ?? '').split(':');
-                return { label: parts[0]?.trim() ?? '', value: parseInt(parts[1]?.trim() ?? '0', 10) || 0 };
+                const raw = n(p) ?? '';
+                const sep = raw.includes(';') ? ';' : ':';
+                const parts = raw.split(sep);
+                const label = parts[0]?.trim() ?? '';
+                // Extract first number from value string (e.g. "34% YoY" → 34)
+                const valStr = parts[1]?.trim() ?? '0';
+                const numMatch = valStr.match(/[\d.]+/);
+                return { label, value: numMatch ? parseFloat(numMatch[0]) : 0 };
             });
             return Object.assign(card, {
                 title: n(title), subtitle: n(subtitle), tag: n(tag), caption: n(caption),

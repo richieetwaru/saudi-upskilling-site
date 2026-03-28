@@ -114,6 +114,44 @@ Pull real data. Never fabricate. Files: jobs_database, skills_catalog, training_
 **`spotlight`** ← `spotlight_data.md`
 - Use spotlight data for trend/stat questions. Pull title, tag, points, and caption from the file.
 
+### DSL Format Examples
+
+Each card is one line: `TYPE|field1|field2|field3|...`
+Fields are pipe-delimited. Use `-` for empty optional fields.
+
+```
+layout:1-3
+response|Here are some top tech jobs in Saudi Arabia
+job|Cloud Engineer|Saudi Aramco|Riyadh|18K-25K SAR/mo|Full-time|AWS,Kubernetes,Python|High demand|2026-03-15
+job|AI/ML Engineer|SDAIA|Riyadh|22K-35K SAR/mo|Full-time|TensorFlow,Python,NLP|Very high demand|2026-03-12
+job|Cybersecurity Specialist|NEOM|Tabuk|20K-30K SAR/mo|Full-time|CISSP,SIEM|Very high demand|2026-03-10
+```
+
+```
+layout:1-2
+response|Let me show you the top skills in demand
+skill|Cloud Computing|Beginner → Advanced|0|Technology|Very High|AWS CCP, Azure, GCP certs|Cloud Engineer,DevOps
+skill|AI & Machine Learning|Intermediate → Expert|0|Technology|Very High|TensorFlow Developer cert|ML Engineer,AI Researcher
+```
+
+```
+layout:1-1
+response|Here's a great free program
+training|Saudi Digital Academy|Communications & IT Ministry|3-6 months|Online + Bootcamp|Free|Beginner-Intermediate|Flagship digital skills academy|Data Science;Cybersecurity;Cloud;AI/ML|Yes
+```
+
+```
+layout:1-1
+response|Explore sectors where opportunities are growing
+tile-grid|Explore Sectors|See where opportunities are growing|-|Technology:7 jobs:💻|Healthcare:4 jobs:🏥|Finance:3 jobs:📊|Energy:2 jobs:⚡|Tourism:2 jobs:🎭
+```
+
+```
+layout:1-1
+response|Here's the tech job market trend
+spotlight|Tech Jobs Surge|Vision 2030 impact|Vision 2030|AI and cybersecurity lead the wave|Tech jobs:34|AI/ML:52|Cybersecurity:100|Cloud:41
+```
+
 ---
 
 ## Rules
